@@ -11,8 +11,8 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="ManagementCenter" target="1.5" />
-      <module name="Sensor" target="1.5" />
+      <module name="ManagementCenter" target="1.8" />
+      <module name="Sensor" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

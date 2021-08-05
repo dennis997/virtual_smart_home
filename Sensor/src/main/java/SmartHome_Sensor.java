@@ -2,9 +2,6 @@ import java.io.IOException;
 import java.net.*;
 import java.sql.Timestamp;
 import java.util.UUID;
-
-import com.sun.org.slf4j.internal.Logger;
-import com.sun.org.slf4j.internal.LoggerFactory;
 import org.json.JSONObject;
 
 
@@ -15,8 +12,6 @@ public class SmartHome_Sensor{
     private static int port;
     private static DatagramSocket clientSocket;
     private static int sleeptimer;
-    private static final Logger LOGGER = LoggerFactory.getLogger(SmartHome_Sensor.class);
-;
 
     SmartHome_Sensor(String ip, int port, String location, int sleeptimer) throws Exception {
         this.clientSocket = new DatagramSocket();
