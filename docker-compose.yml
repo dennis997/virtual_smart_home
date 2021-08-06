@@ -8,12 +8,40 @@ services:
             - IP=localhost
             - PORT=5000
     
-    Sensor:
+    Sensor1:
         image: "sensorimage:latest"
-        container_name: "sensor"
+        container_name: "sensor1"
         environment:
             - DESTINATION=managementcenter
             - IP=localhost
             - PORT=5000
             - LOCATION=bathroom
             - SLEEPTIMER=5000
+
+    Sensor2:
+        image: "sensorimage:latest"
+        container_name: "sensor2"
+        environment:
+            - DESTINATION=managementcenter
+            - IP=localhost
+            - PORT=5000
+            - LOCATION=kitchen
+            - SLEEPTIMER=3000
+    Sensor3:
+        image: "sensorimage:latest"
+        container_name: "sensor3"
+        environment:
+            - DESTINATION=managementcenter
+            - IP=localhost
+            - PORT=5000
+            - LOCATION=garden
+            - SLEEPTIMER=6000
+    Sensor4:
+        image: "sensorimage:latest"
+        container_name: "sensor4"
+        environment:
+            - DESTINATION=managementcenter
+            - IP=localhost
+            - PORT=5000
+            - LOCATION=bedroom
+            - SLEEPTIMER=10000
