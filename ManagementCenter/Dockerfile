@@ -15,7 +15,7 @@ RUN mvn package
 ###
 
 FROM openjdk:11
-LABEL maintainer alexander.scharfenberg@stud.h-da.de
+LABEL maintainer dennis.hilz@stud.h-da.de
 EXPOSE 5000/udp
 
 ENV ip "localhost"
