@@ -1,0 +1,19 @@
+version: '3'
+
+services:
+    ManagementCenter:
+        image: "m_centerimage:latest"
+        container_name: "managementcenter"
+        environment:
+            - IP=localhost
+            - PORT=5000
+    
+    Sensor:
+        image: "sensorimage:latest"
+        container_name: "sensor"
+        environment:
+            - DESTINATION=managementcenter
+            - IP=localhost
+            - PORT=5000
+            - LOCATION=bathroom
+            - SLEEPTIMER=5000

@@ -2,9 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/ManagementCenter/ManagementCenter.iml" filepath="$PROJECT_DIR$/ManagementCenter/ManagementCenter.iml" />
       <module fileurl="file://$PROJECT_DIR$/Sensor/Sensor.iml" filepath="$PROJECT_DIR$/Sensor/Sensor.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/group_block_20.iml" filepath="$PROJECT_DIR$/.idea/group_block_20.iml" />
     </modules>
   </component>
 </project>
