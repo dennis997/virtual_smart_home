@@ -20,8 +20,6 @@ public class SmartHome_Sensor{
         this.location = location;
         this.sleeptimer = sleeptimer;
         this.uuid = UUID.randomUUID();
-
-
     }
 
     public int getRandomNumber(int min, int max) {

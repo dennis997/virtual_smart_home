@@ -5,6 +5,7 @@ public class Main {
  */
     public static void main(String[] args) throws Exception{
 
+        System.out.println("TEST");
         String ip;
         int port;
         String location;
