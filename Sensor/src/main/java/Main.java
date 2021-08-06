@@ -11,10 +11,10 @@ public class Main {
         int sleeptimer;
 
         try{
-            ip = args[0];
-            port = Integer.parseInt(args[1]);
-            location = args[2];
-            sleeptimer = Integer.parseInt(args[3]);
+            ip = System.getenv("DESTINATION");
+            port = Integer.parseInt(System.getenv("PORT"));
+            location = System.getenv("LOCATION");
+            sleeptimer = Integer.parseInt(System.getenv("SLEEPTIMER"));
             SmartHome_Sensor sensor = new SmartHome_Sensor(ip,port,location,sleeptimer);
             sensor.sendData();
 
