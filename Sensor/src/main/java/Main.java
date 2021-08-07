@@ -19,15 +19,11 @@ public class Main {
             sensor.sendData();
 
         }
-catch (Exception e){
+        catch (Exception e){
 
             ip = "localhost";
             port = 5000;
             location = "Wohnzimmer";
-}
-
-
+        }
     }
-
-
 }

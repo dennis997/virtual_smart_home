@@ -13,7 +13,7 @@ public class SmartHome_Sensor{
     private static DatagramSocket clientSocket;
     private static int sleeptimer;
 
-    SmartHome_Sensor(String ip, int port, String location, int sleeptimer) throws Exception {
+    public SmartHome_Sensor(String ip, int port, String location, int sleeptimer) throws Exception {
         this.clientSocket = new DatagramSocket();
         this.port = port;
         this.IPAddress = InetAddress.getByName(ip);
@@ -29,7 +29,7 @@ public class SmartHome_Sensor{
     public byte[] generateSensorData() {
         byte[] sendData = new byte[256];
 
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        String timestamp = new Timestamp(System.currentTimeMillis()).toString();
         int humidity = getRandomNumber(30,99);
         int temp = getRandomNumber(17,30);
         int brightness = getRandomNumber(0,100);
@@ -44,7 +44,7 @@ public class SmartHome_Sensor{
         jsonData.put("brightness", brightness);
         jsonData.put("volume", volume);
 
-        System.out.println("["+uuid+" "+location+"]"+" "+timestamp+" "+humidity+" "+temp+" "+brightness+" "+volume);
+        //System.out.println("["+uuid+" "+location+"]"+" "+timestamp+" "+humidity+" "+temp+" "+brightness+" "+volume);
 
         return jsonData.toString().getBytes();
     }
@@ -57,7 +57,6 @@ public class SmartHome_Sensor{
             DatagramPacket sendPacket = new DatagramPacket(sensorData, sensorData.length, this.IPAddress , this.port);
             try {
                 clientSocket.send(sendPacket);
-
             } catch (IOException e) {
                 e.printStackTrace();
             }
