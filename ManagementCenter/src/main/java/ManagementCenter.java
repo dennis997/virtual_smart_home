@@ -1,50 +1,49 @@
 import Entities.SensorData;
-import com.google.gson.Gson;
-import org.json.JSONObject;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.util.ArrayList;
+import HTTPServer.HTTPHandler;
+import SensorProcessor.UDPReceiver;
 
 public class ManagementCenter {
-
-    private static InetAddress IPAddress;
-    private static DatagramSocket serverSocket;
-    private static ArrayList<SensorData> sensorData;
-    private static Gson gson;
-
-    ManagementCenter(String ip, int port) throws Exception{
-        this.IPAddress = InetAddress.getByName(ip);
-        this.serverSocket = new DatagramSocket(port);
-        this.sensorData = new ArrayList<SensorData>();
-        this.gson = new Gson();
-    }
+    private String serverIP;
+    private int sensorSocketPort;
+    private int httpServerPort;
+    private UDPReceiver udpReceiver;
+    private HTTPHandler httpHandler;
 
 
-    public SensorData parseReceivedData(String sensorDataString) {
-        JSONObject jsonSensorData = new JSONObject(sensorDataString);
+    ManagementCenter() throws Exception{
+        try{
+            if (    (System.getenv("IP") != null ||
+                    (System.getenv("SENSOR_RECEIVER_PORT") != null)) ||
+                    (System.getenv("HTTP_SERVER_PORT") != null)) {
+                serverIP = System.getenv("IP");
+                sensorSocketPort = Integer.parseInt(System.getenv("SENSOR_RECEIVER_PORT"));
+                httpServerPort = Integer.parseInt(System.getenv("HTTP_SERVER_PORT"));
+            } else {
+                System.out.println("[INFO] Using default IP/Port Configuration");
+                serverIP = "localhost";
+                sensorSocketPort = 5000;
+                httpServerPort = 6000;
 
-        String location = (String) jsonSensorData.get("location");
-        String timestamp = (String) jsonSensorData.get("timestamp");
-        int humidity = (int) jsonSensorData.get("humidity");
-        int temp = (int) jsonSensorData.get("temp");
-        int brightness = (int) jsonSensorData.get("brightness");
-        int volume = (int) jsonSensorData.get("volume");
-
-        SensorData sensorDataObject = new SensorData(location, timestamp, humidity, temp, brightness, volume);
-        System.out.println(sensorDataObject);
-        return sensorDataObject;
-    }
-
-    public void receiveData() throws Exception {
-        byte[] data = new byte[256];
-        System.out.println("[INFO] Ready to receive data...");
-
-        while(true) {
-            DatagramPacket receivePacket = new DatagramPacket(data, data.length);
-            this.serverSocket.receive(receivePacket);
-            String sensorDataString = new String(receivePacket.getData()).trim();
-            sensorData.add(parseReceivedData(sensorDataString));
+                System.out.println("[INFO] Server is up and running...");
+                System.out.println("[SensorProcessor] Listening on Port " + this.sensorSocketPort);
+                System.out.println("[HTTPServer] Listening on Port " + this.httpServerPort);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+
+        this.udpReceiver = new UDPReceiver(serverIP, sensorSocketPort);
+        this.httpHandler = new HTTPHandler();
     }
+
+    public void runSensorReceiver() throws Exception {
+        this.udpReceiver.receiveData();
+    }
+
+    public void runHTTPServer() throws Exception {
+
+    }
+
 }
+
+// TODO: Implementing reusable Logging Class for standardized message output on server console
