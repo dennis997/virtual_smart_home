@@ -5,7 +5,7 @@ import org.json.JSONObject;
 import java.net.*;
 import java.util.ArrayList;
 
-public class UDPReceiver{
+public class UDPReceiver {
     private DatagramSocket serverSocket;
     private ArrayList<SensorData> sensorData;
 
@@ -35,10 +35,8 @@ public class UDPReceiver{
 
     public void receiveData() throws Exception {
         byte[] data = new byte[256];
-        System.out.println("[SensorProcessor] Listening on Port " + this.serverSocket.getPort());
+        System.out.println("[SensorProcessor] Listening on Port " + this.serverSocket.getLocalPort());
         System.out.println("[INFO] Ready to receive data...");
-
-
         while(true) {
             DatagramPacket receivePacket = new DatagramPacket(data, data.length);
             this.serverSocket.receive(receivePacket);

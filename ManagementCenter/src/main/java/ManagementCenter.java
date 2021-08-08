@@ -36,9 +36,14 @@ public class ManagementCenter {
         this.httpServer = new HTTPServer(httpServerPort);
     }
 
-    public void runSensorReceiver() throws Exception {
-        this.udpReceiver.receiveData();
-
+    public void runSensorReceiver() {
+        new Thread(() -> {
+            try {
+                this.udpReceiver.receiveData();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
     }
 
     public void runHTTPServer() throws Exception {

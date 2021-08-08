@@ -8,7 +8,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HTTPServer implements Runnable {
+public class HTTPServer{
     private ServerSocket httpSocket;
 
     public HTTPServer(int serverPort) throws Exception {
@@ -64,6 +64,8 @@ public class HTTPServer implements Runnable {
     }
 
     private static void sendClientResponse(Socket client) throws IOException {
+        // TODO: Send different responses according to request. No POST Requests or invalid Requests
+        // TODO: Switch case for different paths and function calls to retrieve the respective sensorData
         OutputStream clientOutput = client.getOutputStream();
         clientOutput.write("HTTP/1.1 200 OK\r\n".getBytes());
         clientOutput.write(("ContentType: text/html\r\n").getBytes());
@@ -72,10 +74,5 @@ public class HTTPServer implements Runnable {
         clientOutput.write("\r\n\r\n".getBytes());
         clientOutput.flush();
         client.close();
-    }
-
-    @Override
-    public void run() {
-
     }
 }
