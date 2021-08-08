@@ -28,31 +28,27 @@ public class HTTPServer{
     }
 
     private static void handleClient(Socket client) throws Exception {
-        System.out.println("[HTTPServer] New client " + client.toString());
         BufferedReader bufReader = new BufferedReader(new InputStreamReader(client.getInputStream()));
         StringBuilder requestBuilder = new StringBuilder();
-        String line;
-        while (!(line = bufReader.readLine()).isBlank()) {
-            requestBuilder.append(line + "\r\n");
+        ArrayList<String> request = new ArrayList<String>();
+        String line = bufReader.readLine();
+        while (line != null && !line.isEmpty()) {
+            request.add(line);
+            line = bufReader.readLine();
         }
-        String request = requestBuilder.toString();
+        if (request.isEmpty())
+            return;
         parseHTTPRequest(request);
         sendClientResponse(client);
     }
 
-    private static void parseHTTPRequest(String request) {
-        String[] singleLineArray = request.split("\r\n");
-        String[] requestLine = singleLineArray[0].split(" ");
+    private static void parseHTTPRequest(ArrayList<String> request) {
+        String[] requestLine = request.get(0).split(" ");
         String method = requestLine[0];
         String path = requestLine[1];
         String version = requestLine[2];
-        String host = singleLineArray[1].split(" ")[1];
+        String host = request.get(1).split(" ")[1];
 
-        List<String> httpHeaders = new ArrayList<>();
-        for (int headerCount = 2; headerCount < singleLineArray.length; headerCount++) {
-            String header = singleLineArray[headerCount];
-            httpHeaders.add(header);
-        }
 
         StringBuilder requestLogEntry = new StringBuilder();
         requestLogEntry.append("[HTTPServer] ");
