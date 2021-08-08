@@ -28,7 +28,7 @@ public class HTTPServer implements Runnable {
     }
 
     private static void handleClient(Socket client) throws Exception {
-        System.out.println("[HTTPServer] New client "+client.toString());
+        System.out.println("[HTTPServer] New client " + client.toString());
         BufferedReader bufReader = new BufferedReader(new InputStreamReader(client.getInputStream()));
         StringBuilder requestBuilder = new StringBuilder();
         String line;
@@ -36,7 +36,6 @@ public class HTTPServer implements Runnable {
             requestBuilder.append(line + "\r\n");
         }
         String request = requestBuilder.toString();
-        System.out.println("[" + client.toString() + "]" + request);
         parseHTTPRequest(request);
         sendClientResponse(client);
     }
@@ -45,9 +44,9 @@ public class HTTPServer implements Runnable {
         String[] singleLineArray = request.split("\r\n");
         String[] requestLine = singleLineArray[0].split(" ");
         String method = requestLine[0];
-        String path = requestLine[1];;
-        String version = requestLine[2];;
-        String host = requestLine[1].split(" ")[1];
+        String path = requestLine[1];
+        String version = requestLine[2];
+        String host = singleLineArray[1].split(" ")[1];
 
         List<String> httpHeaders = new ArrayList<>();
         for (int headerCount = 2; headerCount < singleLineArray.length; headerCount++) {
@@ -56,6 +55,7 @@ public class HTTPServer implements Runnable {
         }
 
         StringBuilder requestLogEntry = new StringBuilder();
+        requestLogEntry.append("[HTTPServer] ");
         requestLogEntry.append(method + " | ");
         requestLogEntry.append(path + " | ");
         requestLogEntry.append(version+ " | ");
@@ -68,12 +68,11 @@ public class HTTPServer implements Runnable {
         clientOutput.write("HTTP/1.1 200 OK\r\n".getBytes());
         clientOutput.write(("ContentType: text/html\r\n").getBytes());
         clientOutput.write("\r\n".getBytes());
-        clientOutput.write("<b>It works!</b>".getBytes());
+        clientOutput.write("<b>Hell Yeah!</b>".getBytes());
         clientOutput.write("\r\n\r\n".getBytes());
         clientOutput.flush();
         client.close();
     }
-
 
     @Override
     public void run() {
