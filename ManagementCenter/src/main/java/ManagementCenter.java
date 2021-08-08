@@ -1,14 +1,15 @@
-import Entities.SensorData;
-import HTTPServer.HTTPHandler;
+import WebServer.HTTPServer;
+import WebServer.Handler.HistoryHandler;
 import SensorProcessor.UDPReceiver;
 
 public class ManagementCenter {
+
+
     private String serverIP;
     private int sensorSocketPort;
     private int httpServerPort;
     private UDPReceiver udpReceiver;
-    private HTTPHandler httpHandler;
-
+    private HTTPServer httpServer;
 
     ManagementCenter() throws Exception{
         try{
@@ -24,26 +25,23 @@ public class ManagementCenter {
                 sensorSocketPort = 5000;
                 httpServerPort = 6000;
 
+                // TODO: Implementing reusable Logging Class for standardized message output on server console
                 System.out.println("[INFO] Server is up and running...");
-                System.out.println("[SensorProcessor] Listening on Port " + this.sensorSocketPort);
-                System.out.println("[HTTPServer] Listening on Port " + this.httpServerPort);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         this.udpReceiver = new UDPReceiver(serverIP, sensorSocketPort);
-        this.httpHandler = new HTTPHandler();
+        this.httpServer = new HTTPServer(httpServerPort);
     }
 
     public void runSensorReceiver() throws Exception {
         this.udpReceiver.receiveData();
+
     }
 
     public void runHTTPServer() throws Exception {
-
+        this.httpServer.listen();
     }
-
 }
-
-// TODO: Implementing reusable Logging Class for standardized message output on server console
