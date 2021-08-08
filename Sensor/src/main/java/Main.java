@@ -17,7 +17,6 @@ public class Main {
             sleeptimer = Integer.parseInt(System.getenv("SLEEPTIMER"));
             SmartHome_Sensor sensor = new SmartHome_Sensor(ip,port,location,sleeptimer);
             sensor.sendData();
-
         }
         catch (Exception e){
 
