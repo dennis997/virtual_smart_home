@@ -51,8 +51,7 @@ public class HTTPServer{
         }
         if (request.isEmpty())
             return;
-        String outputString = handleClientResponse(parseHTTPRequest(request));
-        sendClientResponse(client, outputString);
+        handleClientResponse(client, parseHTTPRequest(request));
     }
 
     private Map<String, String> parseHTTPRequest(ArrayList<String> request) {
@@ -80,47 +79,55 @@ public class HTTPServer{
         return new GsonBuilder().setPrettyPrinting().create().toJson(this.udpReceiver.getSensorData());
     }
 
-    private String getHistory(String location){
+    private String getHistory(String location) throws Exception{
         List<SensorData> filteredSensorData = this.udpReceiver.getSensorData().stream().filter(
                 sensorData -> sensorData.getLocation().equals(location)).collect(Collectors.toList());
+        if(filteredSensorData.isEmpty()){
+            throw new Exception();
+        }
         return new GsonBuilder().setPrettyPrinting().create().toJson(filteredSensorData);
     }
-    private String getCurrent(String location){
+    private String getCurrent(String location) throws Exception{
         List<SensorData> filteredSensorData = this.udpReceiver.getSensorData().stream().filter(
                 sensorData -> sensorData.getLocation().equals(location)).collect(Collectors.toList());
-        SensorData currentData = filteredSensorData.get(filteredSensorData.size()-1);
+            SensorData currentData = filteredSensorData.get(filteredSensorData.size() - 1);
         return new GsonBuilder().setPrettyPrinting().create().toJson(currentData);
     }
 
-    private String handleClientResponse(Map<String, String> requestMap) throws IOException {
-        String jsonOutput;
+
+    private void handleClientResponse(Socket client, Map<String, String> requestMap) throws Exception {
         String path = requestMap.get("path");
         System.out.println(path);
         String[] attributes = path.split("/");
-        switch (attributes[1]) {
-            case "": {
-                jsonOutput = getAll();
-                break;
+        try {
+            if (attributes.length == 0) {
+                sendClientResponse(client, "200 OK", "application/json", getAll());
+            } else {
+                switch (attributes[1]) {
+                    case "history": {
+                        sendClientResponse(client, "200 OK", "application/json", getHistory(attributes[2]));
+                        break;
+                    }
+                    case "current": {
+                        sendClientResponse(client, "200 OK", "application/json", getCurrent(attributes[2]));
+                        break;
+                    }
+                    default:
+                        sendClientResponse(client, "400 Bad Request", "text/html", "<h1>Nope</h1>");
+                }
             }
-            case "history": {
-                jsonOutput = getHistory(attributes[2]);
-                break;
-            }
-            case "current":
-                jsonOutput = getCurrent(attributes[2]);
-                break;
-            default:
-                jsonOutput = "Bad request";
         }
-    return jsonOutput;
+        catch (Exception e){
+            sendClientResponse(client, "400 Bad Request", "text/html", "<h1>Sensor not found</h1>");
+        }
     }
 
-    private static void sendClientResponse(Socket client, String output) throws IOException {
+    private static void sendClientResponse(Socket client, String status, String contentType, String output) throws IOException {
         // TODO: Send different responses according to request. No POST Requests or invalid Requests
         // TODO: Switch case for different paths and function calls to retrieve the respective sensorData
         OutputStream clientOutput = client.getOutputStream();
-        clientOutput.write("HTTP/1.1 200 OK\r\n".getBytes());
-        clientOutput.write(("ContentType: application/json\r\n").getBytes());
+        clientOutput.write(("HTTP/1.1" + status + "\r\n").getBytes());
+        clientOutput.write(("ContentType:" + contentType + "\r\n").getBytes());
         clientOutput.write("\r\n".getBytes());
         clientOutput.write(output.getBytes());
         clientOutput.write("\r\n\r\n".getBytes());
