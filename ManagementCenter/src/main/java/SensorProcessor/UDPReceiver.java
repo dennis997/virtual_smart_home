@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 public class UDPReceiver {
     private DatagramSocket serverSocket;
-    private ArrayList<SensorData> sensorData;
+    private static ArrayList<SensorData> sensorData;
 
     public UDPReceiver(String ip, int serverSocketPort) throws SocketException, UnknownHostException {
         this.serverSocket = new DatagramSocket(serverSocketPort, InetAddress.getByName(ip));

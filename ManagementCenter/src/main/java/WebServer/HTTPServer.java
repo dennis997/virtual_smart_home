@@ -1,4 +1,7 @@
 package WebServer;
+import Entities.SensorData;
+import SensorProcessor.UDPReceiver;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -6,13 +9,14 @@ import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.List;
 
 public class HTTPServer{
     private ServerSocket httpSocket;
+    private UDPReceiver udpReceiver;
 
-    public HTTPServer(int serverPort) throws Exception {
+    public HTTPServer(UDPReceiver udpReceiver, int serverPort) throws Exception {
         this.httpSocket = new ServerSocket(serverPort);
+        this.udpReceiver = udpReceiver;
     }
 
     public void listen() throws Exception {
@@ -23,11 +27,11 @@ public class HTTPServer{
             // TODO: Create new thread for each request --> execute run() for every handler
             try (Socket client = httpSocket.accept()) {
                 handleClient(client);
-            };
+            }
         }
     }
 
-    private static void handleClient(Socket client) throws Exception {
+    private void handleClient(Socket client) throws Exception {
         BufferedReader bufReader = new BufferedReader(new InputStreamReader(client.getInputStream()));
         StringBuilder requestBuilder = new StringBuilder();
         ArrayList<String> request = new ArrayList<String>();
@@ -40,15 +44,17 @@ public class HTTPServer{
             return;
         parseHTTPRequest(request);
         sendClientResponse(client);
+        for (SensorData data : this.udpReceiver.getSensorData()) {
+            System.out.println(data);
+        }
     }
 
-    private static void parseHTTPRequest(ArrayList<String> request) {
+    private void parseHTTPRequest(ArrayList<String> request) {
         String[] requestLine = request.get(0).split(" ");
         String method = requestLine[0];
         String path = requestLine[1];
         String version = requestLine[2];
         String host = request.get(1).split(" ")[1];
-
 
         StringBuilder requestLogEntry = new StringBuilder();
         requestLogEntry.append("[HTTPServer] ");
@@ -57,6 +63,10 @@ public class HTTPServer{
         requestLogEntry.append(version+ " | ");
         requestLogEntry.append(host + " | ");
         System.out.println(requestLogEntry);
+    }
+
+    private void handleClientResponse(Socket client, String path) throws IOException {
+
     }
 
     private static void sendClientResponse(Socket client) throws IOException {

@@ -1,10 +1,7 @@
 import WebServer.HTTPServer;
-import WebServer.Handler.HistoryHandler;
 import SensorProcessor.UDPReceiver;
 
 public class ManagementCenter {
-
-
     private String serverIP;
     private int sensorSocketPort;
     private int httpServerPort;
@@ -33,7 +30,7 @@ public class ManagementCenter {
         }
 
         this.udpReceiver = new UDPReceiver(serverIP, sensorSocketPort);
-        this.httpServer = new HTTPServer(httpServerPort);
+        this.httpServer = new HTTPServer(udpReceiver, httpServerPort);
     }
 
     public void runSensorReceiver() {
@@ -48,5 +45,6 @@ public class ManagementCenter {
 
     public void runHTTPServer() throws Exception {
         this.httpServer.listen();
+        this.udpReceiver.getSensorData();
     }
 }
