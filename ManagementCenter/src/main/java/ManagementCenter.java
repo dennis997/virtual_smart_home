@@ -10,10 +10,9 @@ public class ManagementCenter {
 
     ManagementCenter() throws Exception{
         try{
-            if (    (System.getenv("IP") != null ||
-                    (System.getenv("SENSOR_RECEIVER_PORT") != null)) ||
+            if (    (System.getenv("SENSOR_RECEIVER_PORT") != null) ||
                     (System.getenv("HTTP_SERVER_PORT") != null)) {
-                serverIP = System.getenv("IP");
+
                 sensorSocketPort = Integer.parseInt(System.getenv("SENSOR_RECEIVER_PORT"));
                 httpServerPort = Integer.parseInt(System.getenv("HTTP_SERVER_PORT"));
             } else {
@@ -21,15 +20,12 @@ public class ManagementCenter {
                 serverIP = "localhost";
                 sensorSocketPort = 5000;
                 httpServerPort = 6000;
-
-                // TODO: Implementing reusable Logging Class for standardized message output on server console
-                System.out.println("[INFO] Server is up and running...");
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        this.udpReceiver = new UDPReceiver(serverIP, sensorSocketPort);
+        System.out.println("[INFO] Server is up and running...");
+        this.udpReceiver = new UDPReceiver(sensorSocketPort);
         this.httpServer = new HTTPServer(udpReceiver, httpServerPort);
     }
 
@@ -45,6 +41,5 @@ public class ManagementCenter {
 
     public void runHTTPServer() throws Exception {
         this.httpServer.listen();
-        this.udpReceiver.getSensorData();
     }
 }

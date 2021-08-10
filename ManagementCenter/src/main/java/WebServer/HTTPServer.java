@@ -6,17 +6,13 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.lang.reflect.Array;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.http.HttpResponse;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
 import com.google.gson.*;
 
 public class HTTPServer{
@@ -32,8 +28,7 @@ public class HTTPServer{
         System.out.println("[HTTPServer] Listening on Port " + this.httpSocket.getLocalPort());
         while (true) {
             // Client Handler
-            // TODO: Choose and instantiate Handler here to handle different types of requests
-            // TODO: Create new thread for each request --> execute run() for every handler
+            // TODO: Create new thread for each request
             try (Socket client = httpSocket.accept()) {
                 handleClient(client);
             }
@@ -123,8 +118,6 @@ public class HTTPServer{
     }
 
     private static void sendClientResponse(Socket client, String status, String contentType, String output) throws IOException {
-        // TODO: Send different responses according to request. No POST Requests or invalid Requests
-        // TODO: Switch case for different paths and function calls to retrieve the respective sensorData
         OutputStream clientOutput = client.getOutputStream();
         clientOutput.write(("HTTP/1.1" + status + "\r\n").getBytes());
         clientOutput.write(("ContentType:" + contentType + "\r\n").getBytes());
