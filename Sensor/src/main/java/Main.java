@@ -11,7 +11,7 @@ public class Main {
         int sleeptimer;
 
         try{
-            ip = System.getenv("DESTINATION");
+            ip = System.getenv("IP");
             port = Integer.parseInt(System.getenv("PORT"));
             location = System.getenv("LOCATION");
             sleeptimer = Integer.parseInt(System.getenv("SLEEPTIMER"));
@@ -19,8 +19,7 @@ public class Main {
             sensor.sendData();
         }
         catch (Exception e){
-
-            ip = "localhost";
+            ip = "managementcenter";
             port = 5000;
             location = "Wohnzimmer";
         }
