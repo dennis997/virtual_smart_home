@@ -1,3 +1,4 @@
+import SensorProcessor.MQTTReceiver;
 import WebServer.HTTPServer;
 import SensorProcessor.UDPReceiver;
 
@@ -6,6 +7,7 @@ public class ManagementCenter {
     private int sensorSocketPort;
     private int httpServerPort;
     private UDPReceiver udpReceiver;
+    private MQTTReceiver mqttReceiver;
     private HTTPServer httpServer;
     private int MQTT;
 
@@ -27,18 +29,40 @@ public class ManagementCenter {
             e.printStackTrace();
         }
         System.out.println("[INFO] Server is up and running...");
-        this.udpReceiver = new UDPReceiver(sensorSocketPort);
-        this.httpServer = new HTTPServer(udpReceiver, httpServerPort);
+
+        if (MQTT==1){
+            System.out.println("MQTT chosen");
+            this.mqttReceiver = new MQTTReceiver();
+            //implement http for mqtt
+
+        }
+        else{
+            System.out.println("UDP chosen");
+            this.udpReceiver = new UDPReceiver(sensorSocketPort);
+            this.httpServer = new HTTPServer(udpReceiver, httpServerPort);
+        }
     }
 
     public void runSensorReceiver() {
-        new Thread(() -> {
-            try {
-                this.udpReceiver.receiveData();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }).start();
+        if (MQTT == 1){
+            new Thread(() -> {
+                try {
+                    this.mqttReceiver.receiveData();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }).start();
+
+        }
+        else{
+            new Thread(() -> {
+                try {
+                    this.udpReceiver.receiveData();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }).start();
+        }
     }
 
     public void runHTTPServer() throws Exception {
