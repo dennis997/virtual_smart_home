@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import com.google.gson.*;
 
-public class HTTPServer{
+public class HTTPServer implements Runnable{
     private ServerSocket httpSocket;
     private UDPReceiver udpReceiver;
 
@@ -27,11 +27,19 @@ public class HTTPServer{
     public void listen() throws Exception {
         System.out.println("[HTTPServer] Listening on Port " + this.httpSocket.getLocalPort());
         while (true) {
-            // Client Handler
-            // TODO: Create new thread for each request
-            try (Socket client = httpSocket.accept()) {
-                handleClient(client);
-            }
+            Socket client = httpSocket.accept();
+            System.out.println(client);
+            Thread t = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        handleClient(client);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+            t.start();
         }
     }
 
@@ -92,7 +100,6 @@ public class HTTPServer{
 
     private void handleClientResponse(Socket client, Map<String, String> requestMap) throws Exception {
         String path = requestMap.get("path");
-        System.out.println(path);
         String[] attributes = path.split("/");
         try {
             if (attributes.length == 0) {
@@ -126,5 +133,10 @@ public class HTTPServer{
         clientOutput.write("\r\n\r\n".getBytes());
         clientOutput.flush();
         client.close();
+    }
+
+    @Override
+    public void run() {
+
     }
 }
