@@ -44,7 +44,7 @@ public class SmartHome_Sensor{
         jsonData.put("brightness", brightness);
         jsonData.put("volume", volume);
 
-        //System.out.println("["+uuid+" "+location+"]"+" "+timestamp+" "+humidity+" "+temp+" "+brightness+" "+volume);
+        System.out.println("Sending sensordata [" + location + "]");
 
         return jsonData.toString().getBytes();
     }
@@ -56,6 +56,7 @@ public class SmartHome_Sensor{
             byte[] sensorData = generateSensorData();
             DatagramPacket sendPacket = new DatagramPacket(sensorData, sensorData.length, this.IPAddress , this.port);
             try {
+                System.out.println("[DEBUG] " + this.IPAddress.toString() + ":" + this.port );
                 clientSocket.send(sendPacket);
             } catch (IOException e) {
                 e.printStackTrace();

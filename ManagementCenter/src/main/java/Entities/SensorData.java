@@ -9,6 +9,10 @@ public class SensorData {
     private String timestamp;
     private int humidity, temp, brightness, volume;
 
+    public String getLocation() {
+        return location;
+    }
+
     public SensorData(String location, String timestamp, int humidity, int temp, int brightness, int volume) {
         this.location = location;
         this.timestamp = timestamp;
