@@ -9,8 +9,8 @@ public class UDPReceiver {
     private DatagramSocket serverSocket;
     private static ArrayList<SensorData> sensorData;
 
-    public UDPReceiver(String ip, int serverSocketPort) throws SocketException, UnknownHostException {
-        this.serverSocket = new DatagramSocket(serverSocketPort, InetAddress.getByName(ip));
+    public UDPReceiver(int serverSocketPort) throws SocketException{
+        this.serverSocket = new DatagramSocket(serverSocketPort);
         this.sensorData = new ArrayList<SensorData>();
     }
 
@@ -36,7 +36,7 @@ public class UDPReceiver {
     public void receiveData() throws Exception {
         byte[] data = new byte[256];
         System.out.println("[SensorProcessor] Listening on Port " + this.serverSocket.getLocalPort());
-        System.out.println("[INFO] Ready to receive data...");
+        System.out.println("[SensorProcessor] Ready to receive data...");
         while(true) {
             DatagramPacket receivePacket = new DatagramPacket(data, data.length);
             this.serverSocket.receive(receivePacket);
