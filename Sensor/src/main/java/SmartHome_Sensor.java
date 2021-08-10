@@ -2,6 +2,8 @@ import java.io.IOException;
 import java.net.*;
 import java.sql.Timestamp;
 import java.util.UUID;
+
+import org.eclipse.paho.client.mqttv3.*;
 import org.json.JSONObject;
 
 
@@ -12,14 +14,32 @@ public class SmartHome_Sensor{
     private static int port;
     private static DatagramSocket clientSocket;
     private static int sleeptimer;
+    private static int mqtt;
+    private static IMqttClient pub;
 
-    public SmartHome_Sensor(String ip, int port, String location, int sleeptimer) throws Exception {
+    public SmartHome_Sensor(String ip, int port, String location, int sleeptimer, int mqtt) throws Exception {
         this.clientSocket = new DatagramSocket();
         this.port = port;
         this.IPAddress = InetAddress.getByName(ip);
         this.location = location;
         this.sleeptimer = sleeptimer;
         this.uuid = UUID.randomUUID();
+        this.mqtt = mqtt;
+        /*
+        If mqtt equals 1, mqtt is activated. If its 0, we use Udp.
+        The server endpoint we're using is a public MQTT broker hosted by the Paho project,
+        which allows anyone with an internet connection to test clients without the need of any authentication.
+         */
+        if(mqtt == 1){
+            IMqttClient publisher = new MqttClient("tcp://iot.eclipse.org:1883",uuid.toString());
+            //The code used to establish a connection to the server typically looks like this:
+            MqttConnectOptions options = new MqttConnectOptions();
+            options.setAutomaticReconnect(true); //auto-reconnect after failure
+            options.setCleanSession(true); //unsent messages from previous session will be discarded
+            options.setConnectionTimeout(10); //connection timeout at 10 seconds
+            publisher.connect(options);
+            pub = publisher;
+        }
     }
 
     public int getRandomNumber(int min, int max) {
@@ -27,8 +47,6 @@ public class SmartHome_Sensor{
     }
 
     public byte[] generateSensorData() {
-        byte[] sendData = new byte[256];
-
         String timestamp = new Timestamp(System.currentTimeMillis()).toString();
         int humidity = getRandomNumber(30,99);
         int temp = getRandomNumber(17,30);
@@ -52,16 +70,32 @@ public class SmartHome_Sensor{
 
     public void sendData() throws InterruptedException {
 
-        while(true){
-            byte[] sensorData = generateSensorData();
-            DatagramPacket sendPacket = new DatagramPacket(sensorData, sensorData.length, this.IPAddress , this.port);
-            try {
-                System.out.println("[DEBUG] " + this.IPAddress.toString() + ":" + this.port );
-                clientSocket.send(sendPacket);
-            } catch (IOException e) {
-                e.printStackTrace();
+        if (mqtt == 1) {
+            while(true) {
+                byte[] sensorData = generateSensorData();
+                MqttMessage mqttMessage = new MqttMessage(sensorData);
+                mqttMessage.setQos(0); // Quality of Service: we don`t care that we lose Packages, just like UDP.
+                mqttMessage.setRetained(true); //This flag indicates to the broker that it should retain this message until consumed by a subscriber.
+                try {
+                    pub.publish("sensor", mqttMessage); //publishing the message with topic "sensor" (?)
+                }
+                catch (MqttException e){
+                    e.printStackTrace();
+                }
+                Thread.sleep(sleeptimer);
             }
-            Thread.sleep(sleeptimer);
+        } else {
+            while (true) {
+                byte[] sensorData = generateSensorData();
+                DatagramPacket sendPacket = new DatagramPacket(sensorData, sensorData.length, this.IPAddress, this.port);
+                try {
+                    System.out.println("[DEBUG] " + this.IPAddress.toString() + ":" + this.port);
+                    clientSocket.send(sendPacket);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                Thread.sleep(sleeptimer);
+            }
         }
     }
 }

@@ -7,6 +7,7 @@ public class ManagementCenter {
     private int httpServerPort;
     private UDPReceiver udpReceiver;
     private HTTPServer httpServer;
+    private int MQTT;
 
     ManagementCenter() throws Exception{
         try{
@@ -15,6 +16,7 @@ public class ManagementCenter {
 
                 sensorSocketPort = Integer.parseInt(System.getenv("SENSOR_RECEIVER_PORT"));
                 httpServerPort = Integer.parseInt(System.getenv("HTTP_SERVER_PORT"));
+                MQTT = Integer.parseInt(System.getenv("MQTT"));
             } else {
                 System.out.println("[INFO] Using default IP/Port Configuration");
                 serverIP = "localhost";

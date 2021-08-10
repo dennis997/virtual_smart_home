@@ -9,13 +9,15 @@ public class Main {
         int port;
         String location;
         int sleeptimer;
+        int mqtt;
 
         try{
             ip = System.getenv("IP");
             port = Integer.parseInt(System.getenv("PORT"));
             location = System.getenv("LOCATION");
             sleeptimer = Integer.parseInt(System.getenv("SLEEPTIMER"));
-            SmartHome_Sensor sensor = new SmartHome_Sensor(ip,port,location,sleeptimer);
+            mqtt = Integer.parseInt(System.getenv("MQTT"));
+            SmartHome_Sensor sensor = new SmartHome_Sensor(ip,port,location,sleeptimer, mqtt);
             sensor.sendData();
         }
         catch (Exception e){

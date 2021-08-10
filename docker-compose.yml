@@ -10,6 +10,7 @@ services:
         environment:
             - SENSOR_RECEIVER_PORT=5000
             - HTTP_SERVER_PORT=6000
+            - MQTT=1
         ports:
             - 6000:6000
     
@@ -24,6 +25,7 @@ services:
             - PORT=5000
             - LOCATION=bathroom
             - SLEEPTIMER=5000
+            - MQTT=1
 
     Sensor2:
         image: "sensorimage:latest"
@@ -35,7 +37,8 @@ services:
             - IP=managementcenter
             - PORT=5000
             - LOCATION=kitchen
-            - SLEEPTIMER=3000
+            - SLEEPTIMER=
+            - MQTT=1
 
     Sensor3:
         image: "sensorimage:latest"
@@ -48,6 +51,7 @@ services:
             - PORT=5000
             - LOCATION=garden
             - SLEEPTIMER=6000
+            - MQTT=1
 
     Sensor4:
         image: "sensorimage:latest"
@@ -60,3 +64,4 @@ services:
             - PORT=5000
             - LOCATION=bedroom
             - SLEEPTIMER=10000
+            - MQTT=1
