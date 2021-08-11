@@ -1,5 +1,6 @@
 package WebServer;
 import Entities.SensorData;
+import SensorProcessor.MQTTReceiver;
 import SensorProcessor.UDPReceiver;
 
 import java.io.BufferedReader;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import com.google.gson.*;
+import org.eclipse.paho.client.mqttv3.MqttException;
 
 /**
  * HTTPServer represents one of the two main services running on the ManagementCenter. It provides a RESTful web interface to
@@ -22,6 +24,14 @@ import com.google.gson.*;
 public class HTTPServer{
     private ServerSocket httpSocket;
     private UDPReceiver udpReceiver;
+    private MQTTReceiver mqttReceiver;
+    private int mqtt = 0;
+
+    public HTTPServer(MQTTReceiver mqttReceiver, int serverPort) throws IOException {
+        this.httpSocket = new ServerSocket(serverPort);
+        this.mqttReceiver = mqttReceiver;
+        mqtt = 1;
+    }
 
     /**
      * Constructor initializes main components of HTTPServer class
@@ -66,6 +76,7 @@ public class HTTPServer{
      */
     private void handleClient(Socket client) throws Exception {
         BufferedReader bufReader = new BufferedReader(new InputStreamReader(client.getInputStream()));
+        StringBuilder requestBuilder = new StringBuilder();
         ArrayList<String> request = new ArrayList<String>();
         String line = bufReader.readLine();
         while (line != null && !line.isEmpty()) {
@@ -84,6 +95,7 @@ public class HTTPServer{
      * @return
      */
     private Map<String, String> parseHTTPRequest(ArrayList<String> request) {
+
         Map<String, String> requestMap = new HashMap<String, String>();
         String[] requestLine = request.get(0).split(" ");
 
@@ -108,7 +120,13 @@ public class HTTPServer{
      * @return JSON-String
      */
     private String getAll(){
-        return new GsonBuilder().setPrettyPrinting().create().toJson(this.udpReceiver.getSensorData());
+        if (mqtt == 1){
+            return new GsonBuilder().setPrettyPrinting().create().toJson(this.mqttReceiver.getSensorData());
+        }
+        else{
+            return new GsonBuilder().setPrettyPrinting().create().toJson(this.udpReceiver.getSensorData());
+        }
+
     }
 
     /**
@@ -118,25 +136,33 @@ public class HTTPServer{
      * @throws Exception
      */
     private String getHistory(String location) throws Exception{
-        List<SensorData> filteredSensorData = this.udpReceiver.getSensorData().stream().filter(
-                sensorData -> sensorData.getLocation().equals(location)).collect(Collectors.toList());
+        List<SensorData> filteredSensorData;
+        if (mqtt == 1){
+            filteredSensorData = this.mqttReceiver.getSensorData().stream().filter(
+                    sensorData -> sensorData.getLocation().equals(location)).collect(Collectors.toList());
+        }
+        else{
+            filteredSensorData = this.udpReceiver.getSensorData().stream().filter(
+                    sensorData -> sensorData.getLocation().equals(location)).collect(Collectors.toList());
+        }
         if(filteredSensorData.isEmpty()){
             throw new Exception();
         }
         return new GsonBuilder().setPrettyPrinting().create().toJson(filteredSensorData);
     }
-
-    /**
-     * Obtains the most current dataset from the specified sensor.
-     * @param location is the unique identifier for the sensor
-     * @return JSON-String
-     * @throws Exception
-     */
-    private String getCurrent(String location) throws Exception{
-        List<SensorData> filteredSensorData = this.udpReceiver.getSensorData().stream().filter(
-                sensorData -> sensorData.getLocation().equals(location)).collect(Collectors.toList());
+    private String getCurrent(String location){
+        if (mqtt == 1){
+            List<SensorData> filteredSensorData = this.mqttReceiver.getSensorData().stream().filter(
+                    sensorData -> sensorData.getLocation().equals(location)).collect(Collectors.toList());
             SensorData currentData = filteredSensorData.get(filteredSensorData.size() - 1);
-        return new GsonBuilder().setPrettyPrinting().create().toJson(currentData);
+            return new GsonBuilder().setPrettyPrinting().create().toJson(currentData);
+        }
+        else{
+            List<SensorData> filteredSensorData = this.udpReceiver.getSensorData().stream().filter(
+                    sensorData -> sensorData.getLocation().equals(location)).collect(Collectors.toList());
+            SensorData currentData = filteredSensorData.get(filteredSensorData.size() - 1);
+            return new GsonBuilder().setPrettyPrinting().create().toJson(currentData);
+        }
     }
 
     /**
@@ -190,5 +216,10 @@ public class HTTPServer{
         clientOutput.write("\r\n\r\n".getBytes());
         clientOutput.flush();
         client.close();
+    }
+
+    @Override
+    public void run() {
+
     }
 }
