@@ -16,6 +16,31 @@ public class SensorData {
     public String getLocation() {
         return location;
     }
+    /**
+     * Get-method for attribute timestamp
+     * @return timestamp as String
+     */
+    public String getTimestamp() { return timestamp; }
+    /**
+     * Get-method for attribute humidity
+     * @return humidity as Integer
+     */
+    public int getHumidity() { return humidity; }
+    /**
+     * Get-method for attribute temp
+     * @return temp as Integer
+     */
+    public int getTemp() { return temp; }
+    /**
+     * Get-method for attribute brightness
+     * @return brightness as Integer
+     */
+    public int getBrightness() { return brightness; }
+    /**
+     * Get-method for attribute volume
+     * @return volume as Integer
+     */
+    public int getVolume() { return volume; }
 
     /**
      * SensorData Constructor initializes all six attributes for a complete dataset

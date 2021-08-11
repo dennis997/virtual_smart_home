@@ -7,10 +7,12 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="ManagementCenter" />
+        <module name="CloudServer" />
         <module name="Sensor" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="CloudServer" target="1.8" />
       <module name="ManagementCenter" target="11" />
       <module name="Sensor" target="1.8" />
     </bytecodeTargetLevel>
