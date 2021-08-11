@@ -58,26 +58,39 @@ public class SmartHomeSensor {
                 getRandomNumber(35,95)
         );
         Gson gson = new Gson();
-        System.out.println("Sending sensordata [" + location + "]");
         return gson.toJson(sensorData).getBytes();
     }
 
     /**
-     * sendData sends out the byte[] of sensorData over the initialized UDPSocket
+     * Sends out the byte[] of sensorData over the initialized UDPSocket
      * @throws InterruptedException
      */
     public void sendData() throws InterruptedException {
-
         while(true){
             byte[] sensorData = generateSensorData();
             DatagramPacket sendPacket = new DatagramPacket(sensorData, sensorData.length, this.IPAddress , this.port);
             try {
-                System.out.println("[DEBUG] " + this.IPAddress.toString() + ":" + this.port );
                 clientSocket.send(sendPacket);
             } catch (IOException e) {
                 e.printStackTrace();
             }
             Thread.sleep(sleeptimer);
+        }
+    }
+
+    /**
+     * Sends out specified amount of sensordata over the initialized UDPSocket
+     * @throws InterruptedException
+     */
+    public void sendData(int amount) throws InterruptedException {
+        for (int count = 0; count != amount; count++) {
+            byte[] sensorData = generateSensorData();
+            DatagramPacket sendPacket = new DatagramPacket(sensorData, sensorData.length, this.IPAddress , this.port);
+            try {
+                clientSocket.send(sendPacket);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }
