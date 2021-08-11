@@ -1,5 +1,3 @@
-package Entities;
-
 /**
  * SensorData class represents a single dataset of six values to describe the current situation
  * in range of the specific sensor location.

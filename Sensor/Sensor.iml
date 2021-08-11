@@ -52,5 +52,6 @@
     <orderEntry type="library" name="Maven: org.opentest4j:opentest4j:1.0.0-ALPHA" level="project" />
     <orderEntry type="library" name="Maven: org.junit:junit-commons:5.0.0-ALPHA" level="project" />
     <orderEntry type="library" name="Maven: org.junit:junit-engine-api:5.0.0-ALPHA" level="project" />
+    <orderEntry type="library" name="Maven: com.google.code.gson:gson:2.8.7" level="project" />
   </component>
 </module>

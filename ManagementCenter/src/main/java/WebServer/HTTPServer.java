@@ -15,15 +15,30 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import com.google.gson.*;
 
-public class HTTPServer implements Runnable{
+/**
+ * HTTPServer represents one of the two main services running on the ManagementCenter. It provides a RESTful web interface to
+ * access the received sensorData via GET-Requests only!
+ */
+public class HTTPServer{
     private ServerSocket httpSocket;
     private UDPReceiver udpReceiver;
 
+    /**
+     * Constructor initializes main components of HTTPServer class
+     * @param udpReceiver instance to access sensordata
+     * @param serverPort provided by the docker-compose file
+     * @throws Exception
+     */
     public HTTPServer(UDPReceiver udpReceiver, int serverPort) throws Exception {
         this.httpSocket = new ServerSocket(serverPort);
         this.udpReceiver = udpReceiver;
     }
 
+    /**
+     * HTTPServer listens on specified port. Once a client is connected (Sends out valid GET-Request) a new Thread
+     * is created and the @handleClient method is being called.
+     * @throws Exception
+     */
     public void listen() throws Exception {
         System.out.println("[HTTPServer] Listening on Port " + this.httpSocket.getLocalPort());
         while (true) {
@@ -43,9 +58,14 @@ public class HTTPServer implements Runnable{
         }
     }
 
+    /**
+     * The method handles the incoming GET-Request from the client and creates an request-array with the main
+     * attributes to be parsed.
+     * @param client Socket object from where the connection was initiated
+     * @throws Exception
+     */
     private void handleClient(Socket client) throws Exception {
         BufferedReader bufReader = new BufferedReader(new InputStreamReader(client.getInputStream()));
-        StringBuilder requestBuilder = new StringBuilder();
         ArrayList<String> request = new ArrayList<String>();
         String line = bufReader.readLine();
         while (line != null && !line.isEmpty()) {
@@ -57,8 +77,13 @@ public class HTTPServer implements Runnable{
         handleClientResponse(client, parseHTTPRequest(request));
     }
 
+    /**
+     * The method parses the HTTP-GET-Request given the previous obtained ArrayList with the mentioned attributes.
+     * A readable output for the console is being created and displayed and a Map with every parameter is created.
+     * @param request as ArrayList with every line of the HTTP-Request
+     * @return
+     */
     private Map<String, String> parseHTTPRequest(ArrayList<String> request) {
-
         Map<String, String> requestMap = new HashMap<String, String>();
         String[] requestLine = request.get(0).split(" ");
 
@@ -78,10 +103,20 @@ public class HTTPServer implements Runnable{
         return requestMap;
     }
 
+    /**
+     * Obtains all sensorData from all available sensors.
+     * @return JSON-String
+     */
     private String getAll(){
         return new GsonBuilder().setPrettyPrinting().create().toJson(this.udpReceiver.getSensorData());
     }
 
+    /**
+     * Obtains all sensorData from the specified sensor.
+     * @param location is the unique identifier for the sensor
+     * @return JSON-String
+     * @throws Exception
+     */
     private String getHistory(String location) throws Exception{
         List<SensorData> filteredSensorData = this.udpReceiver.getSensorData().stream().filter(
                 sensorData -> sensorData.getLocation().equals(location)).collect(Collectors.toList());
@@ -90,6 +125,13 @@ public class HTTPServer implements Runnable{
         }
         return new GsonBuilder().setPrettyPrinting().create().toJson(filteredSensorData);
     }
+
+    /**
+     * Obtains the most current dataset from the specified sensor.
+     * @param location is the unique identifier for the sensor
+     * @return JSON-String
+     * @throws Exception
+     */
     private String getCurrent(String location) throws Exception{
         List<SensorData> filteredSensorData = this.udpReceiver.getSensorData().stream().filter(
                 sensorData -> sensorData.getLocation().equals(location)).collect(Collectors.toList());
@@ -97,7 +139,13 @@ public class HTTPServer implements Runnable{
         return new GsonBuilder().setPrettyPrinting().create().toJson(currentData);
     }
 
-
+    /**
+     * Calls get-functions according to the given URI / path obtained by the HTTP-GET-Request. Content type and response
+     * code for the client response is being set.
+     * @param client Socket object from where the connection was initiated
+     * @param requestMap Map with parsed attributes
+     * @throws Exception
+     */
     private void handleClientResponse(Socket client, Map<String, String> requestMap) throws Exception {
         String path = requestMap.get("path");
         String[] attributes = path.split("/");
@@ -124,6 +172,15 @@ public class HTTPServer implements Runnable{
         }
     }
 
+    /**
+     * Sends out the corresponding client response to the initial request. The output is being displayed in the clients
+     * browser and the Socket as well as the thread is being closed after that.
+     * @param client Socket object from where the connection was initiated
+     * @param status HTTP reponse code
+     * @param contentType json/application in case of correct URI or text/html to display errors
+     * @param output output JSON/HTML String to be displayed
+     * @throws IOException
+     */
     private static void sendClientResponse(Socket client, String status, String contentType, String output) throws IOException {
         OutputStream clientOutput = client.getOutputStream();
         clientOutput.write(("HTTP/1.1" + status + "\r\n").getBytes());
@@ -133,10 +190,5 @@ public class HTTPServer implements Runnable{
         clientOutput.write("\r\n\r\n".getBytes());
         clientOutput.flush();
         client.close();
-    }
-
-    @Override
-    public void run() {
-
     }
 }

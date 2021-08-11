@@ -1,6 +1,10 @@
 import WebServer.HTTPServer;
 import SensorProcessor.UDPReceiver;
 
+/**
+ * The ManagementCenter is the core component, managing the two services HTTPServer and UDPReceiver as well as the
+ * communication to the Service Provider via Apache Thrift.
+ */
 public class ManagementCenter {
     private String serverIP;
     private int sensorSocketPort;
@@ -8,6 +12,11 @@ public class ManagementCenter {
     private UDPReceiver udpReceiver;
     private HTTPServer httpServer;
 
+    /**
+     * Constructor obtains environment variables provided by docker-compose.yml to initialize the UDPReceiver and
+     * HTTPServer Sockets. Prints out status messages afterwards.
+     * @throws Exception
+     */
     ManagementCenter() throws Exception{
         try{
             if (    (System.getenv("SENSOR_RECEIVER_PORT") != null) ||
@@ -29,6 +38,9 @@ public class ManagementCenter {
         this.httpServer = new HTTPServer(udpReceiver, httpServerPort);
     }
 
+    /**
+     * Starts the SensorReceiver (UDP / MQTT) in separate thread.
+     */
     public void runSensorReceiver() {
         new Thread(() -> {
             try {
@@ -39,6 +51,10 @@ public class ManagementCenter {
         }).start();
     }
 
+    /**
+     * Starts the HTTPServer to listen for new clients.
+     * @throws Exception
+     */
     public void runHTTPServer() throws Exception {
         this.httpServer.listen();
     }

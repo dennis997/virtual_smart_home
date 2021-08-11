@@ -1,10 +1,10 @@
 public class Main {
 
-/**
- @args: ip, port, location
- */
-    public static void main(String[] args) throws Exception{
-
+    /**
+     * @param args ip, port, location, sleeptimer provided in docker-compose.yml as env variables
+     * @throws Exception
+     */
+    public static void main(String[] args) throws Exception {
         String ip;
         int port;
         String location;
@@ -15,7 +15,7 @@ public class Main {
             port = Integer.parseInt(System.getenv("PORT"));
             location = System.getenv("LOCATION");
             sleeptimer = Integer.parseInt(System.getenv("SLEEPTIMER"));
-            SmartHome_Sensor sensor = new SmartHome_Sensor(ip,port,location,sleeptimer);
+            SmartHomeSensor sensor = new SmartHomeSensor(ip,port,location,sleeptimer);
             sensor.sendData();
         }
         catch (Exception e){
