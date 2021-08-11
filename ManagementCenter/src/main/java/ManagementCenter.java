@@ -24,6 +24,7 @@ public class ManagementCenter {
                 serverIP = "localhost";
                 sensorSocketPort = 5000;
                 httpServerPort = 6000;
+                MQTT = 1;
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -33,7 +34,7 @@ public class ManagementCenter {
         if (MQTT==1){
             System.out.println("MQTT chosen");
             this.mqttReceiver = new MQTTReceiver();
-            //implement http for mqtt
+            this.httpServer = new HTTPServer(mqttReceiver, httpServerPort);
 
         }
         else{

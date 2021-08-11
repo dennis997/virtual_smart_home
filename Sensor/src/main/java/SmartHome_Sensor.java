@@ -31,13 +31,16 @@ public class SmartHome_Sensor{
         which allows anyone with an internet connection to test clients without the need of any authentication.
          */
         if(mqtt == 1){
-            IMqttClient publisher = new MqttClient("tcp://iot.eclipse.org:1883",uuid.toString());
+            String broker = System.getenv("Broker");
+            IMqttClient publisher = new MqttClient("tcp://"+broker+":1883",uuid.toString());
             //The code used to establish a connection to the server typically looks like this:
             MqttConnectOptions options = new MqttConnectOptions();
             options.setAutomaticReconnect(true); //auto-reconnect after failure
             options.setCleanSession(true); //unsent messages from previous session will be discarded
             options.setConnectionTimeout(10); //connection timeout at 10 seconds
+            System.out.println("trying to connect");
             publisher.connect(options);
+            System.out.println("connected");
             pub = publisher;
         }
     }
@@ -77,6 +80,7 @@ public class SmartHome_Sensor{
                 mqttMessage.setQos(0); // Quality of Service: we don`t care that we lose Packages, just like UDP.
                 mqttMessage.setRetained(true); //This flag indicates to the broker that it should retain this message until consumed by a subscriber.
                 try {
+                    System.out.println("publishing sensor data!");
                     pub.publish("sensor", mqttMessage); //publishing the message with topic "sensor" (?)
                 }
                 catch (MqttException e){

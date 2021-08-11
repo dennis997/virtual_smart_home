@@ -1,5 +1,6 @@
 package WebServer;
 import Entities.SensorData;
+import SensorProcessor.MQTTReceiver;
 import SensorProcessor.UDPReceiver;
 
 import java.io.BufferedReader;
@@ -14,17 +15,29 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import com.google.gson.*;
+import org.eclipse.paho.client.mqttv3.MqttException;
 
 public class HTTPServer implements Runnable{
     private ServerSocket httpSocket;
     private UDPReceiver udpReceiver;
+    private MQTTReceiver mqttReceiver;
+    private int mqtt = 0;
+
+    public HTTPServer(MQTTReceiver mqttReceiver, int serverPort) throws IOException {
+        this.httpSocket = new ServerSocket(serverPort);
+        this.mqttReceiver = mqttReceiver;
+        mqtt = 1;
+    }
 
     public HTTPServer(UDPReceiver udpReceiver, int serverPort) throws Exception {
         this.httpSocket = new ServerSocket(serverPort);
         this.udpReceiver = udpReceiver;
     }
 
+
+
     public void listen() throws Exception {
+
         System.out.println("[HTTPServer] Listening on Port " + this.httpSocket.getLocalPort());
         while (true) {
             Socket client = httpSocket.accept();
@@ -79,22 +92,43 @@ public class HTTPServer implements Runnable{
     }
 
     private String getAll(){
-        return new GsonBuilder().setPrettyPrinting().create().toJson(this.udpReceiver.getSensorData());
+        if (mqtt == 1){
+            return new GsonBuilder().setPrettyPrinting().create().toJson(this.mqttReceiver.getSensorData());
+        }
+        else{
+            return new GsonBuilder().setPrettyPrinting().create().toJson(this.udpReceiver.getSensorData());
+        }
+
     }
 
     private String getHistory(String location) throws Exception{
-        List<SensorData> filteredSensorData = this.udpReceiver.getSensorData().stream().filter(
-                sensorData -> sensorData.getLocation().equals(location)).collect(Collectors.toList());
+        List<SensorData> filteredSensorData;
+        if (mqtt == 1){
+            filteredSensorData = this.mqttReceiver.getSensorData().stream().filter(
+                    sensorData -> sensorData.getLocation().equals(location)).collect(Collectors.toList());
+        }
+        else{
+            filteredSensorData = this.udpReceiver.getSensorData().stream().filter(
+                    sensorData -> sensorData.getLocation().equals(location)).collect(Collectors.toList());
+        }
         if(filteredSensorData.isEmpty()){
             throw new Exception();
         }
         return new GsonBuilder().setPrettyPrinting().create().toJson(filteredSensorData);
     }
-    private String getCurrent(String location) throws Exception{
-        List<SensorData> filteredSensorData = this.udpReceiver.getSensorData().stream().filter(
-                sensorData -> sensorData.getLocation().equals(location)).collect(Collectors.toList());
+    private String getCurrent(String location){
+        if (mqtt == 1){
+            List<SensorData> filteredSensorData = this.mqttReceiver.getSensorData().stream().filter(
+                    sensorData -> sensorData.getLocation().equals(location)).collect(Collectors.toList());
             SensorData currentData = filteredSensorData.get(filteredSensorData.size() - 1);
-        return new GsonBuilder().setPrettyPrinting().create().toJson(currentData);
+            return new GsonBuilder().setPrettyPrinting().create().toJson(currentData);
+        }
+        else{
+            List<SensorData> filteredSensorData = this.udpReceiver.getSensorData().stream().filter(
+                    sensorData -> sensorData.getLocation().equals(location)).collect(Collectors.toList());
+            SensorData currentData = filteredSensorData.get(filteredSensorData.size() - 1);
+            return new GsonBuilder().setPrettyPrinting().create().toJson(currentData);
+        }
     }
 
 
