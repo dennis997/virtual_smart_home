@@ -8,7 +8,7 @@ import java.net.DatagramPacket;
 import java.util.ArrayList;
 import java.util.UUID;
 
-public class MQTTReceiver {
+public class MQTTReceiver{
     private static ArrayList<SensorData> sensorData;
     private static UUID uuid;
     private static MqttClient mqttClient;
@@ -19,7 +19,9 @@ public class MQTTReceiver {
         this.mqttClient = new MqttClient("tcp://iot.eclipse.org:1883",uuid.toString());
     }
 
-    public ArrayList<SensorData> getSensorData() {return sensorData;}
+    public ArrayList<SensorData> getSensorData() {
+        return sensorData;
+    }
 
 
     private SensorData parseReceivedData(String sensorDataString) {
@@ -38,28 +40,23 @@ public class MQTTReceiver {
     }
 
 
+
+
+
     public void receiveData() throws MqttException {
-        mqttClient.setCallback(new MqttCallback() {
-            @Override
-            public void connectionLost(Throwable throwable) {
+        try{
+            this.mqttClient.setCallback(new SimpleMqttCallback());
+            this.mqttClient.connect();
+            System.out.println("Subsriber connected to MQTT broker");
 
-            }
-
-            @Override
-            public void messageArrived(String s, MqttMessage mqttMessage) throws Exception {
-
-            }
-
-            @Override
-            public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) {
-
-            }
-        });
-
-        mqttClient.connect();
-
-        mqttClient.subscribe("sensor");
+            // Subscribe to a topic.
+            this.mqttClient.subscribe("sensor");
+            System.out.println("Subsribed to Sensor");
+        }
+        catch(MqttException e){
+            e.printStackTrace();
+        }
 
     }
-
 }
+

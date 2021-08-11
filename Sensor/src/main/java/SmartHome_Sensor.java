@@ -77,7 +77,7 @@ public class SmartHome_Sensor{
                 mqttMessage.setQos(0); // Quality of Service: we don`t care that we lose Packages, just like UDP.
                 mqttMessage.setRetained(true); //This flag indicates to the broker that it should retain this message until consumed by a subscriber.
                 try {
-                    pub.publish(location, mqttMessage); //publishing the message with topic "sensor" (?)
+                    pub.publish("sensor", mqttMessage); //publishing the message with topic "sensor" (?)
                 }
                 catch (MqttException e){
                     e.printStackTrace();
