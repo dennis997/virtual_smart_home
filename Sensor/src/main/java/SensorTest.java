@@ -6,7 +6,7 @@ public class SensorTest {
     private SmartHomeSensor testSensor;
 
     public SensorTest() throws Exception {
-        this.testSensor = new SmartHome_Sensor("localhost", 5000, "testLocation", 1000,1);
+        this.testSensor = new SmartHomeSensor("localhost", 5000, "testLocation", 1000);
     }
 
     @Test
