@@ -1,34 +1,40 @@
+import CloudConnection.CloudConnector;
 import WebServer.HTTPServer;
 import SensorProcessor.UDPReceiver;
 
 /**
- * The ManagementCenter is the core component, managing the two services HTTPServer and UDPReceiver as well as the
- * communication to the Service Provider via Apache Thrift.
+ * The ManagementCenter is the core component, managing the three services HTTPServer, UDPReceiver and Cloudconnector (the
+ * communication to the Service Provider via Apache Thrift).
  */
 public class ManagementCenter {
     private String serverIP;
     private int sensorSocketPort;
     private int httpServerPort;
+    private int thriftServerPort;
     private UDPReceiver udpReceiver;
     private HTTPServer httpServer;
+    private CloudConnector cloudConnector;
 
     /**
-     * Constructor obtains environment variables provided by docker-compose.yml to initialize the UDPReceiver and
-     * HTTPServer Sockets. Prints out status messages afterwards.
+     * Constructor obtains environment variables provided by docker-compose.yml to initialize the UDPReceiver,
+     * HTTPServer Sockets and Cloucconnector TThreadPoolServer. Prints out status messages afterwards.
      * @throws Exception
      */
     ManagementCenter() throws Exception{
         try{
             if (    (System.getenv("SENSOR_RECEIVER_PORT") != null) ||
-                    (System.getenv("HTTP_SERVER_PORT") != null)) {
+                    (System.getenv("HTTP_SERVER_PORT") != null) ||
+                    (System.getenv("THRIFT_SERVER_PORT") != null)){
 
                 sensorSocketPort = Integer.parseInt(System.getenv("SENSOR_RECEIVER_PORT"));
                 httpServerPort = Integer.parseInt(System.getenv("HTTP_SERVER_PORT"));
+                thriftServerPort = Integer.parseInt(System.getenv("THRIFT_SERVER_PORT"));
             } else {
                 System.out.println("[INFO] Using default IP/Port Configuration");
                 serverIP = "localhost";
                 sensorSocketPort = 5000;
-                httpServerPort = 6000;
+                httpServerPort = 7000;
+                thriftServerPort = 9002;
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -36,6 +42,7 @@ public class ManagementCenter {
         System.out.println("[INFO] Server is up and running...");
         this.udpReceiver = new UDPReceiver(sensorSocketPort);
         this.httpServer = new HTTPServer(udpReceiver, httpServerPort);
+        this.cloudConnector = new CloudConnector(serverIP, sensorSocketPort);
     }
 
     /**
@@ -57,5 +64,9 @@ public class ManagementCenter {
      */
     public void runHTTPServer() throws Exception {
         this.httpServer.listen();
+    }
+
+    public void runCloudConnector() throws InterruptedException {
+        this.cloudConnector.sendSensorData(this.udpReceiver.getSensorData().get(0));
     }
 }

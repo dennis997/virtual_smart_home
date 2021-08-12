@@ -15,9 +15,11 @@ public class CloudConnector {
     private int serviceProviderPort;
     private String serviceProviderIp;
 
-    public CloudConnector(String serviceProviderIp, int serviceProviderPort) throws InterruptedException{
-
+    public CloudConnector(String serviceProviderIp, int serviceProviderPort) throws InterruptedException {
             try {
+                this.serviceProviderIp = serviceProviderIp;
+                this.serviceProviderPort = serviceProviderPort;
+
                 transport = new TSocket(serviceProviderIp, serviceProviderPort);
                 transport.open();
                 protocol = new TBinaryProtocol(transport);
@@ -39,7 +41,10 @@ public class CloudConnector {
         sensorResource.volume = sensorData.getVolume();
 
         try {
-             persisted = client.persistSensorData(sensorResource);
+            //persisted = client.persistSensorData(sensorResource);
+            boolean connected = client.testConnection();
+            if (connected) {System.out.println("JUHU THRIFT LÄUFT!");}
+            transport.flush();
         }
         catch (TException e) {
             // TODO: Handling Reconnection and Connection fails in P5
