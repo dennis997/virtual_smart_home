@@ -5,16 +5,16 @@ import org.apache.thrift.TException;
 
 public class RPCHandler implements SensorResourceService.Iface {
     // TODO: Instantiating DB instance here and persist in persistSensorData
-    // private DB DB
+    private DBConnector dbConnector;
 
-    public RPCHandler() throws InterruptedException {
-        // new DBHandler Instance here
+    public RPCHandler() throws Exception {
+        dbConnector = new DBConnector();
     }
 
     @Override
-    public boolean persistSensorData(SensorResource resource) throws TException {
-        // TODO: Calls have to be synchronized due to write conflict issues
-        SensorData testSensorData = new SensorData(
+    public boolean persistSensorData(SensorResource resource) {
+        return dbConnector.persist(resource);
+/*        SensorData testSensorData = new SensorData(
                 resource.location,
                 resource.timestamp,
                 resource.humidity,
@@ -22,8 +22,7 @@ public class RPCHandler implements SensorResourceService.Iface {
                 resource.brightness,
                 resource.volume);
 
-        System.out.println(testSensorData);
-        return false;
+        System.out.println(testSensorData);*/
     }
 
     @Override
