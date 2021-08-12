@@ -1,3 +1,4 @@
+import Entities.SensorData;
 import gen.SensorResource;
 import gen.SensorResourceService;
 import org.apache.thrift.TException;
@@ -12,6 +13,16 @@ public class RPCHandler implements SensorResourceService.Iface {
 
     @Override
     public boolean persistSensorData(SensorResource resource) throws TException {
+        // TODO: Calls have to be synchronized due to write conflict issues
+        SensorData testSensorData = new SensorData(
+                resource.location,
+                resource.timestamp,
+                resource.humidity,
+                resource.temp,
+                resource.brightness,
+                resource.volume);
+
+        System.out.println(testSensorData);
         return false;
     }
 

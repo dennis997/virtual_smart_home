@@ -31,17 +31,17 @@ public class CloudConnector {
         }
 
     public void sendSensorData(SensorData sensorData) throws InterruptedException, TTransportException {
-/*        boolean persisted = false;
+        boolean persisted = false;
         SensorResource sensorResource = new SensorResource();
         sensorResource.location = sensorData.getLocation();
         sensorResource.timestamp = sensorData.getTimestamp();
         sensorResource.brightness = sensorData.getBrightness();
         sensorResource.temp = sensorData.getTemp();
-        sensorResource.volume = sensorData.getVolume();*/
+        sensorResource.volume = sensorData.getVolume();
         try {
-            //persisted = client.persistSensorData(sensorResource);
-            boolean connected = client.testConnection();
-            if (connected) {System.out.println("JUHU THRIFT LÄUFT!");}
+            persisted = client.persistSensorData(sensorResource);
+            //boolean connected = client.testConnection();
+            //if (connected) {System.out.println("JUHU THRIFT LÄUFT!");}
             transport.flush();
         }
         catch (TException e) {

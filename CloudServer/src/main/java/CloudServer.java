@@ -1,4 +1,5 @@
 import gen.SensorResourceService;
+import org.apache.log4j.BasicConfigurator;
 import org.apache.thrift.TMultiplexedProcessor;
 import org.apache.thrift.server.TServer;
 import org.apache.thrift.server.TThreadPoolServer;
@@ -14,28 +15,26 @@ import java.util.concurrent.TimeUnit;
 public class CloudServer {
     private TThreadPoolServer threadPoolserver;
     private TServerTransport serverTransport;
-    private TMultiplexedProcessor processor;
 
-    public CloudServer(int port) throws TTransportException {
+    public CloudServer(int port) throws TTransportException, InterruptedException {
+        BasicConfigurator.configure();
         serverTransport = new TServerSocket(port);
-        processor = new TMultiplexedProcessor();
-        threadPoolserver = (TThreadPoolServer) createServer(serverTransport, processor);
+        threadPoolserver = createServer(serverTransport);
     }
 
-    public TServer createServer(TServerTransport serverTransport, TMultiplexedProcessor processor) {
-        TThreadPoolServer.Args args = new TThreadPoolServer.Args(serverTransport).processor(processor);
-        args.stopTimeoutVal = 3;
-        args.stopTimeoutUnit = TimeUnit.SECONDS;
-        SynchronousQueue<Runnable> executorQueue = // NOSONAR
-                new SynchronousQueue<Runnable>();
-        ExecutorService executorService = new ThreadPoolExecutor(args.minWorkerThreads, args.maxWorkerThreads,
-                60, TimeUnit.SECONDS, executorQueue);
-        args.executorService = executorService;
-        return new TThreadPoolServer(args);
+    public TThreadPoolServer createServer(TServerTransport serverTransport) throws InterruptedException {
+        return new TThreadPoolServer(new TThreadPoolServer.Args(serverTransport)
+                .processor(new SensorResourceService.Processor<>(new RPCHandler())));
     }
 
     public void start() throws TTransportException, InterruptedException {
-        this.threadPoolserver.serve();
+        new Thread(() -> {
+            try {
+                this.threadPoolserver.serve();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
         System.out.println("[SERVICEPROVIDER] Server is up and running...");
     }
 
