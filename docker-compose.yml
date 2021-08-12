@@ -11,14 +11,15 @@ services:
         environment:
             - SENSOR_RECEIVER_PORT=5000
             - HTTP_SERVER_PORT=7001
-            - MQTT=1
+            - MQTT=0
             - BROKER=mqttcontainer
             - BROKER_PORT=1883
             - THRIFT_SERVER_PORT=9002
+            - SERVER_NAME=managementcenter
         ports:
             - 7001:7001
         depends_on:
-            - MOSQUITTO
+            - CloudServer
 
     CloudServer:
         image: "cloudserverimage:latest"
@@ -32,7 +33,7 @@ services:
            - DB_SERVER_PORT=27017
            - THRIFT_SERVER_PORT=9002
         depends_on:
-            - mongo
+            - MOSQUITTO
 
     Sensor1:
         image: "sensorimage:latest"
@@ -46,7 +47,7 @@ services:
             - PORT=5000
             - LOCATION=bathroom
             - SLEEPTIMER=5000
-            - MQTT=1
+            - MQTT=0
             - BROKER=mqttcontainer
             - BROKER_PORT=1883
         depends_on:
@@ -63,7 +64,7 @@ services:
             - PORT=5000
             - LOCATION=kitchen
             - SLEEPTIMER=4000
-            - MQTT=1
+            - MQTT=0
             - BROKER=mqttcontainer
             - BROKER_PORT=1883
         depends_on:
@@ -80,7 +81,7 @@ services:
             - PORT=5000
             - LOCATION=garden
             - SLEEPTIMER=6000
-            - MQTT=1
+            - MQTT=0
             - BROKER=mqttcontainer
             - BROKER_PORT=1883
         depends_on:
@@ -97,7 +98,7 @@ services:
             - PORT=5000
             - LOCATION=bedroom
             - SLEEPTIMER=10000
-            - MQTT=1
+            - MQTT=0
             - BROKER=mqttcontainer
             - BROKER_PORT=1883
         depends_on:
@@ -109,7 +110,7 @@ services:
         container_name: "mqttcontainer"
         command: mosquitto -c /mosquitto-no-auth.conf
         depends_on:
-            -   CloudServer
+            - mongo
 
     mongo:
         image: mongo

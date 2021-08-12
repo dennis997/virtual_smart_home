@@ -10,7 +10,7 @@ import org.apache.thrift.transport.TTransportException;
  * communication to the Service Provider via Apache Thrift).
  */
 public class ManagementCenter {
-    private String serverIP;
+    private String serverName;
     private int sensorSocketPort;
     private int httpServerPort;
     private int thriftServerPort;
@@ -34,7 +34,8 @@ public class ManagementCenter {
                     (System.getenv("HTTP_SERVER_PORT") != null) ||
                     (System.getenv("THRIFT_SERVER_PORT") != null) ||
                     (System.getenv("BROKER") != null) ||
-                    (System.getenv("BROKER_PORT") != null))
+                    (System.getenv("BROKER_PORT") != null) ||
+                            (System.getenv("SERVER_NAME") != null))
             {
                 sensorSocketPort = Integer.parseInt(System.getenv("SENSOR_RECEIVER_PORT"));
                 httpServerPort = Integer.parseInt(System.getenv("HTTP_SERVER_PORT"));
@@ -42,11 +43,12 @@ public class ManagementCenter {
                 mqttBrokerPort = Integer.parseInt(System.getenv("BROKER_PORT"));
                 mqttBrokerName = System.getenv("BROKER");
                 thriftServerPort = Integer.parseInt(System.getenv("THRIFT_SERVER_PORT"));
+                serverName = System.getenv("SERVER_NAME");
 
 
             } else { //start in IDE
                 System.out.println("[INFO] Using default IP/Port Configuration");
-                serverIP = "localhost";
+                serverName = "localhost";
                 mqttBrokerName = "localhost";
                 mqttBrokerPort = 1883;
                 sensorSocketPort = 5000;
@@ -59,7 +61,7 @@ public class ManagementCenter {
         }
         System.out.println("[INFO] Server is up and running...");
 
-        this.cloudConnector = new CloudConnector(serverIP, thriftServerPort);
+        this.cloudConnector = new CloudConnector(serverName, thriftServerPort);
 
         if (MQTT==1){
             System.out.println("MQTT chosen");
