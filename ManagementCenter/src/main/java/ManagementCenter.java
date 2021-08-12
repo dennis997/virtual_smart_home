@@ -1,6 +1,8 @@
 import CloudConnection.CloudConnector;
+import Entities.SensorData;
 import WebServer.HTTPServer;
 import SensorProcessor.UDPReceiver;
+import org.apache.thrift.transport.TTransportException;
 
 /**
  * The ManagementCenter is the core component, managing the three services HTTPServer, UDPReceiver and Cloudconnector (the
@@ -42,7 +44,7 @@ public class ManagementCenter {
         System.out.println("[INFO] Server is up and running...");
         this.udpReceiver = new UDPReceiver(sensorSocketPort);
         this.httpServer = new HTTPServer(udpReceiver, httpServerPort);
-        this.cloudConnector = new CloudConnector(serverIP, sensorSocketPort);
+        this.cloudConnector = new CloudConnector(serverIP, thriftServerPort);
     }
 
     /**
@@ -63,10 +65,16 @@ public class ManagementCenter {
      * @throws Exception
      */
     public void runHTTPServer() throws Exception {
-        this.httpServer.listen();
+        new Thread(() -> {
+            try {
+                this.httpServer.listen();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
     }
 
-    public void runCloudConnector() throws InterruptedException {
-        this.cloudConnector.sendSensorData(this.udpReceiver.getSensorData().get(0));
+    public void runCloudConnector() throws InterruptedException, TTransportException {
+        this.cloudConnector.sendSensorData(new SensorData("hier", "uhrzeit", 50, 20, 30, 40));
     }
 }

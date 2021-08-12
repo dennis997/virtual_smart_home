@@ -23,23 +23,21 @@ public class CloudConnector {
                 transport = new TSocket(serviceProviderIp, serviceProviderPort);
                 transport.open();
                 protocol = new TBinaryProtocol(transport);
-
-                SensorResourceService.Client client = new SensorResourceService.Client(protocol);
+                client = new SensorResourceService.Client(protocol);
                 System.out.println("[CloudConnector] RPC connection established!");
             } catch (TTransportException e) {
                 System.out.println("[CloudConnector] RPC connection failed!");
             }
         }
 
-    public void sendSensorData(SensorData sensorData) throws InterruptedException {
-        boolean persisted = false;
+    public void sendSensorData(SensorData sensorData) throws InterruptedException, TTransportException {
+/*        boolean persisted = false;
         SensorResource sensorResource = new SensorResource();
         sensorResource.location = sensorData.getLocation();
         sensorResource.timestamp = sensorData.getTimestamp();
         sensorResource.brightness = sensorData.getBrightness();
         sensorResource.temp = sensorData.getTemp();
-        sensorResource.volume = sensorData.getVolume();
-
+        sensorResource.volume = sensorData.getVolume();*/
         try {
             //persisted = client.persistSensorData(sensorResource);
             boolean connected = client.testConnection();
@@ -47,6 +45,7 @@ public class CloudConnector {
             transport.flush();
         }
         catch (TException e) {
+            e.printStackTrace();
             // TODO: Handling Reconnection and Connection fails in P5
         }
     }
