@@ -18,6 +18,8 @@ public class ManagementCenter {
     private MQTTReceiver mqttReceiver;
     private HTTPServer httpServer;
     private int MQTT;
+    private int mqttBrokerPort;
+    private String mqttBrokerName;
     private CloudConnector cloudConnector;
 
     /**
@@ -27,40 +29,47 @@ public class ManagementCenter {
      */
     ManagementCenter() throws Exception{
         try{
-            if (    (System.getenv("SENSOR_RECEIVER_PORT") != null) ||
+            if ( //start in Docker
+                    (System.getenv("SENSOR_RECEIVER_PORT") != null) ||
                     (System.getenv("HTTP_SERVER_PORT") != null) ||
-                    (System.getenv("THRIFT_SERVER_PORT") != null)){
-
+                    (System.getenv("THRIFT_SERVER_PORT") != null) ||
+                    (System.getenv("BROKER") != null) ||
+                    (System.getenv("BROKER_PORT") != null))
+            {
                 sensorSocketPort = Integer.parseInt(System.getenv("SENSOR_RECEIVER_PORT"));
                 httpServerPort = Integer.parseInt(System.getenv("HTTP_SERVER_PORT"));
                 MQTT = Integer.parseInt(System.getenv("MQTT"));
+                mqttBrokerPort = Integer.parseInt(System.getenv("BROKER_PORT"));
+                mqttBrokerName = System.getenv("BROKER");
                 thriftServerPort = Integer.parseInt(System.getenv("THRIFT_SERVER_PORT"));
-            } else {
+
+
+            } else { //start in IDE
                 System.out.println("[INFO] Using default IP/Port Configuration");
                 serverIP = "localhost";
+                mqttBrokerName = "localhost";
+                mqttBrokerPort = 1883;
                 sensorSocketPort = 5000;
-                httpServerPort = 7000;
-                MQTT = 1;
-                httpServerPort = 7000;
+                MQTT = 1; //UDP or MQTT?
+                httpServerPort = 7001;
                 thriftServerPort = 9002;
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
         System.out.println("[INFO] Server is up and running...");
-        this.udpReceiver = new UDPReceiver(sensorSocketPort);
-        this.httpServer = new HTTPServer(udpReceiver, httpServerPort);
+
         this.cloudConnector = new CloudConnector(serverIP, thriftServerPort);
 
         if (MQTT==1){
             System.out.println("MQTT chosen");
-            this.mqttReceiver = new MQTTReceiver();
+            this.mqttReceiver = new MQTTReceiver(mqttBrokerName, mqttBrokerPort, cloudConnector);
             this.httpServer = new HTTPServer(mqttReceiver, httpServerPort);
 
         }
         else{
             System.out.println("UDP chosen");
-            this.udpReceiver = new UDPReceiver(sensorSocketPort);
+            this.udpReceiver = new UDPReceiver(sensorSocketPort, cloudConnector);
             this.httpServer = new HTTPServer(udpReceiver, httpServerPort);
         }
     }
@@ -102,9 +111,5 @@ public class ManagementCenter {
                 e.printStackTrace();
             }
         }).start();
-    }
-
-    public void runCloudConnector() throws InterruptedException, TTransportException {
-        this.cloudConnector.sendSensorData(new SensorData("hier", "uhrzeit", 50, 20, 30, 40));
     }
 }

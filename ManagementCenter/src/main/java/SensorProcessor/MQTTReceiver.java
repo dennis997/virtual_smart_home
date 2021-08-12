@@ -1,5 +1,6 @@
 package SensorProcessor;
 
+import CloudConnection.CloudConnector;
 import Entities.SensorData;
 import org.eclipse.paho.client.mqttv3.*;
 import org.json.JSONObject;
@@ -12,19 +13,18 @@ public class MQTTReceiver implements MqttCallback{
     private static ArrayList<SensorData> sensorData;
     private static UUID uuid = UUID.randomUUID();
     private static MqttClient mqttClient;
+    private static CloudConnector cloudConnector;
 
 //+broker
-    public MQTTReceiver() throws MqttException{
+    public MQTTReceiver(String mqttBrokerName, int mqttBrokerPort, CloudConnector cloudConnector) throws MqttException {
         this.sensorData = new ArrayList<SensorData>();
-        String broker = System.getenv("Broker");
-        String brokerPort = System.getenv("Brokerport");
-        this.mqttClient = new MqttClient("tcp://"+broker+":"+brokerPort,uuid.toString());
+        this.mqttClient = new MqttClient("tcp://"+mqttBrokerName+":"+mqttBrokerPort,uuid.toString());
+        this.cloudConnector = cloudConnector;
     }
 
     public ArrayList<SensorData> getSensorData() {
         return sensorData;
     }
-
 
     private SensorData parseReceivedData(String sensorDataString) {
         JSONObject jsonSensorData = new JSONObject(sensorDataString);
@@ -47,11 +47,11 @@ public class MQTTReceiver implements MqttCallback{
         try{
             this.mqttClient.setCallback(this);
             this.mqttClient.connect();
-            System.out.println("Subscriber connected to MQTT broker");
+            System.out.println("[MQTTReceiver] Subscriber connected to MQTT broker");
 
             // Subscribe to a topic.
             this.mqttClient.subscribe("sensor");
-            System.out.println("Subscribed to Sensor");
+            System.out.println("[MQTTReceiver] Subscribed to Topic Sensor");
         }
         catch(MqttException e){
             e.printStackTrace();
@@ -82,7 +82,9 @@ public class MQTTReceiver implements MqttCallback{
      */
     @Override
     public void messageArrived(String s, MqttMessage mqttMessage) throws Exception {
-        sensorData.add(parseReceivedData(new String(mqttMessage.getPayload())));
+        SensorData arrivedSensorDataset = parseReceivedData(new String(mqttMessage.getPayload()));
+        sensorData.add(arrivedSensorDataset);
+        cloudConnector.sendSensorData(arrivedSensorDataset);
     }
     /*
     Called when delivery for a message has been completed, and all acknowledgments have been received.

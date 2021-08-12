@@ -14,7 +14,7 @@ public class CloudServer {
 
         try {
             if (System.getenv("THRIFT_SERVER_PORT") != null) {
-                cloudServerPort = Integer.parseInt(System.getenv("SENSOR_RECEIVER_PORT"));
+                cloudServerPort = Integer.parseInt(System.getenv("THRIFT_SERVER_PORT"));
             } else {
                 cloudServerPort = 9002;
             }

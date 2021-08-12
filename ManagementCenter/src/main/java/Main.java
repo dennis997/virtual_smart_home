@@ -9,6 +9,5 @@ public class Main {
         ManagementCenter managementCenter = new ManagementCenter();
         managementCenter.runSensorReceiver();
         managementCenter.runHTTPServer();
-        managementCenter.runCloudConnector();
     }
 }

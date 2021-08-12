@@ -7,16 +7,32 @@ services:
         restart: always
         build:
               context: ./ManagementCenter
+              dockerfile: Dockerfile
         environment:
             - SENSOR_RECEIVER_PORT=5000
-            - HTTP_SERVER_PORT=7000
+            - HTTP_SERVER_PORT=7001
             - MQTT=1
-            - Broker=mqttcontainer
-            - Brokerport=1883
+            - BROKER=mqttcontainer
+            - BROKER_PORT=1883
+            - THRIFT_SERVER_PORT=9002
         ports:
-            - 7000:7000
+            - 7001:7001
         depends_on:
             - MOSQUITTO
+
+    CloudServer:
+        image: "cloudserverimage:latest"
+        restart: always
+        container_name: "cloudserver"
+        build:
+            context: ./CloudServer
+            dockerfile: Dockerfile
+        environment:
+           - DB_SERVER_NAME=mongo
+           - DB_SERVER_PORT=27017
+           - THRIFT_SERVER_PORT=9002
+        depends_on:
+            - mongo
 
     Sensor1:
         image: "sensorimage:latest"
@@ -24,14 +40,15 @@ services:
         container_name: "sensor1"
         build:
               context: ./Sensor
+              dockerfile: Dockerfile
         environment:
             - IP=managementcenter
             - PORT=5000
             - LOCATION=bathroom
             - SLEEPTIMER=5000
             - MQTT=1
-            - Broker=mqttcontainer
-            - Brokerport=1883
+            - BROKER=mqttcontainer
+            - BROKER_PORT=1883
         depends_on:
             - ManagementCenter
 
@@ -47,8 +64,8 @@ services:
             - LOCATION=kitchen
             - SLEEPTIMER=4000
             - MQTT=1
-            - Broker=mqttcontainer
-            - Brokerport=1883
+            - BROKER=mqttcontainer
+            - BROKER_PORT=1883
         depends_on:
             - ManagementCenter
 
@@ -64,10 +81,11 @@ services:
             - LOCATION=garden
             - SLEEPTIMER=6000
             - MQTT=1
-            - Broker=mqttcontainer
-            - Brokerport=1883
+            - BROKER=mqttcontainer
+            - BROKER_PORT=1883
         depends_on:
             - ManagementCenter
+
     Sensor4:
         image: "sensorimage:latest"
         restart: always
@@ -80,22 +98,23 @@ services:
             - LOCATION=bedroom
             - SLEEPTIMER=10000
             - MQTT=1
-            - Broker=mqttcontainer
-            - Brokerport=1883
+            - BROKER=mqttcontainer
+            - BROKER_PORT=1883
         depends_on:
             - ManagementCenter
+
     MOSQUITTO:
         image: eclipse-mosquitto:2.0.11
         restart: always
         container_name: "mqttcontainer"
         command: mosquitto -c /mosquitto-no-auth.conf
-
-
-
+        depends_on:
+            -   CloudServer
 
     mongo:
         image: mongo
         restart: always
+        container_name: "mongo"
 
     mongo-express:
         image: mongo-express

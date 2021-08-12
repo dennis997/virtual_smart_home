@@ -1,4 +1,5 @@
 package SensorProcessor;
+import CloudConnection.CloudConnector;
 import Entities.SensorData;
 import org.json.JSONObject;
 
@@ -13,15 +14,17 @@ import java.util.ArrayList;
 public class UDPReceiver {
     private DatagramSocket serverSocket;
     private static ArrayList<SensorData> sensorData;
+    private static CloudConnector cloudConnector;
 
     /**
      * Constructor creates the datastructure to save the sensorData and initializes a new UDP Socket
      * @param serverSocketPort is the UDP Port to listen for incoming SensorData
      * @throws SocketException
      */
-    public UDPReceiver(int serverSocketPort) throws SocketException{
+    public UDPReceiver(int serverSocketPort, CloudConnector cloudConnector) throws SocketException{
         this.serverSocket = new DatagramSocket(serverSocketPort);
         this.sensorData = new ArrayList<SensorData>();
+        this.cloudConnector = cloudConnector;
     }
 
     /**
@@ -62,13 +65,15 @@ public class UDPReceiver {
      */
     public void receiveData() throws Exception {
         byte[] data = new byte[256];
-        System.out.println("[SensorProcessor] Listening on Port " + this.serverSocket.getLocalPort());
-        System.out.println("[SensorProcessor] Ready to receive data...");
+        System.out.println("[UDPReceiver] Listening on Port " + this.serverSocket.getLocalPort());
+        System.out.println("[UDPReceiver] Ready to receive data...");
         while(true) {
             DatagramPacket receivePacket = new DatagramPacket(data, data.length);
             this.serverSocket.receive(receivePacket);
             String sensorDataString = new String(receivePacket.getData()).trim();
-            sensorData.add(parseReceivedData(sensorDataString));
+            SensorData arrivedSensorDataset = parseReceivedData(sensorDataString);
+            sensorData.add(arrivedSensorDataset);
+            cloudConnector.sendSensorData(arrivedSensorDataset);
         }
     }
 }

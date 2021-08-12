@@ -9,17 +9,13 @@ import org.apache.thrift.transport.TTransportException;
 import gen.*;
 
 public class CloudConnector {
-    private SensorResourceService.Client client;
-    private TTransport transport;
-    private TProtocol protocol;
-    private int serviceProviderPort;
-    private String serviceProviderIp;
+    private static SensorResourceService.Client client;
+    private static TTransport transport;
+    private static TProtocol protocol;
 
-    public CloudConnector(String serviceProviderIp, int serviceProviderPort) throws InterruptedException {
+
+    public CloudConnector(String serviceProviderIp, int serviceProviderPort) {
             try {
-                this.serviceProviderIp = serviceProviderIp;
-                this.serviceProviderPort = serviceProviderPort;
-
                 transport = new TSocket(serviceProviderIp, serviceProviderPort);
                 transport.open();
                 protocol = new TBinaryProtocol(transport);
@@ -30,8 +26,7 @@ public class CloudConnector {
             }
         }
 
-    public void sendSensorData(SensorData sensorData) throws InterruptedException, TTransportException {
-        boolean persisted = false;
+    public void sendSensorData(SensorData sensorData) {
         SensorResource sensorResource = new SensorResource();
         sensorResource.location = sensorData.getLocation();
         sensorResource.timestamp = sensorData.getTimestamp();
@@ -39,9 +34,7 @@ public class CloudConnector {
         sensorResource.temp = sensorData.getTemp();
         sensorResource.volume = sensorData.getVolume();
         try {
-            persisted = client.persistSensorData(sensorResource);
-            //boolean connected = client.testConnection();
-            //if (connected) {System.out.println("JUHU THRIFT LÄUFT!");}
+            client.persistSensorData(sensorResource);
             transport.flush();
         }
         catch (TException e) {

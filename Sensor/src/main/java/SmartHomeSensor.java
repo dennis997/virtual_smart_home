@@ -20,6 +20,8 @@ public class SmartHomeSensor {
     private static int sleeptimer;
     private static int mqtt;
     private static IMqttClient pub;
+    private static String broker;
+    private static int brokerPort;
     /**
      *
      * @param ip of ManagementCenter within the internal docker network
@@ -36,24 +38,30 @@ public class SmartHomeSensor {
         this.sleeptimer = sleeptimer;
         this.uuid = UUID.randomUUID();
         this.mqtt = mqtt;
+
         /*
         If mqtt equals 1, mqtt is activated. If its 0, we use Udp.
         The server endpoint we're using is a public MQTT broker hosted by the Paho project,
         which allows anyone with an internet connection to test clients without the need of any authentication.
          */
-        //broker
         if(mqtt == 1){
-            String broker = System.getenv("Broker");
-            String brokerPort = System.getenv("Brokerport");
+            //start in Docker
+            if ((System.getenv("BROKER") != null) || (System.getenv("BROKER_PORT") != null)) {
+                broker = System.getenv("BROKER");
+                brokerPort = Integer.parseInt(System.getenv("BROKER_PORT"));
+            } else { // start in IDE
+                broker = "localhost";
+                brokerPort = 1883;
+            }
             IMqttClient publisher = new MqttClient("tcp://"+broker+":"+brokerPort,uuid.toString());
             //The code used to establish a connection to the server typically looks like this:
             MqttConnectOptions options = new MqttConnectOptions();
             options.setAutomaticReconnect(true); //auto-reconnect after failure
             options.setCleanSession(true); //unsent messages from previous session will be discarded
             options.setConnectionTimeout(10); //connection timeout at 10 seconds
-            System.out.println("trying to connect");
+            System.out.println("Trying to connect...");
             publisher.connect(options);
-            System.out.println("connected");
+            System.out.println("Connected to broker...");
             pub = publisher;
         }
     }
@@ -94,6 +102,7 @@ public class SmartHomeSensor {
             while(true) {
                 byte[] sensorData = generateSensorData();
                 MqttMessage mqttMessage = new MqttMessage(sensorData);
+                // TODO: QoS should be 1 or 2 in P5!
                 mqttMessage.setQos(0); // Quality of Service: we don`t care that we lose Packages, just like UDP.
                 mqttMessage.setRetained(true); //This flag indicates to the broker that it should retain this message until consumed by a subscriber.
                 try {
@@ -109,7 +118,6 @@ public class SmartHomeSensor {
                 byte[] sensorData = generateSensorData();
                 DatagramPacket sendPacket = new DatagramPacket(sensorData, sensorData.length, this.IPAddress, this.port);
                 try {
-                    System.out.println("[DEBUG] " + this.IPAddress.toString() + ":" + this.port);
                     clientSocket.send(sendPacket);
                 } catch (IOException e) {
                     e.printStackTrace();

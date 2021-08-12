@@ -9,9 +9,22 @@ import org.bson.Document;
 public class DBConnector {
     private final MongoDatabase database;
     private final String collectionName = "SmartHome";
+    private static String cloudServerName;
+    private static int cloudServerPort;
 
     public DBConnector() throws Exception {
-        MongoClient mClient = new MongoClient("mongo", 27017 );
+
+        if ( //start in Docker
+                (System.getenv("DB_SERVER_NAME") != null) || (System.getenv("DB_SERVER_PORT") != null)) {
+            cloudServerName = System.getenv("DB_SERVER_NAME");
+            cloudServerPort = Integer.parseInt(System.getenv("DB_SERVER_PORT"));
+        }
+        else{ // start in IDE
+            cloudServerName = "localhost";
+            cloudServerPort = 27017;
+        }
+
+        MongoClient mClient = new MongoClient(cloudServerName, cloudServerPort);
         database = mClient.getDatabase("SmartHome");
     }
 
