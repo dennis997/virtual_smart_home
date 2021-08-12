@@ -9,11 +9,12 @@ services:
               context: ./ManagementCenter
         environment:
             - SENSOR_RECEIVER_PORT=5000
-            - HTTP_SERVER_PORT=6000
+            - HTTP_SERVER_PORT=7000
             - MQTT=1
-            - Broker = MOSQUITTO
+            - Broker = mqttcontainer
+            - Brokerport = 1883
         ports:
-            - 6000:6000
+            - 7000:7000
         depends_on:
             - MOSQUITTO
 
@@ -29,7 +30,8 @@ services:
             - LOCATION=bathroom
             - SLEEPTIMER=5000
             - MQTT=1
-            - Broker = MOSQUITTO
+            - Broker = mqttcontainer
+            - Brokerport = 1883
         depends_on:
             - ManagementCenter
 
@@ -43,9 +45,10 @@ services:
             - IP=managementcenter
             - PORT=5000
             - LOCATION=kitchen
-            - SLEEPTIMER=
+            - SLEEPTIMER=4000
             - MQTT=1
-            - Broker = MOSQUITTO
+            - Broker = mqttcontainer
+            - Brokerport = 1883
         depends_on:
             - ManagementCenter
 
@@ -61,7 +64,8 @@ services:
             - LOCATION=garden
             - SLEEPTIMER=6000
             - MQTT=1
-            - Broker = MOSQUITTO
+            - Broker = mqttcontainer
+            - Brokerport = 1883
         depends_on:
             - ManagementCenter
     Sensor4:
@@ -76,13 +80,15 @@ services:
             - LOCATION=bedroom
             - SLEEPTIMER=10000
             - MQTT=1
-            - Broker = MOSQUITTO
+            - Broker = mqttcontainer
+            - Brokerport = 1883
         depends_on:
             - ManagementCenter
     MOSQUITTO:
         image: eclipse-mosquitto:2.0.11
         restart: always
         container_name: "mqttcontainer"
+        command: mosquitto -c /mosquitto-no-auth.conf
 
 
 

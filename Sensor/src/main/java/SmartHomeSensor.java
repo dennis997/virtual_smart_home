@@ -44,7 +44,8 @@ public class SmartHomeSensor {
         //broker
         if(mqtt == 1){
             String broker = System.getenv("Broker");
-            IMqttClient publisher = new MqttClient("tcp://localhost:1883",uuid.toString());
+            String brokerPort = System.getenv("Brokerport");
+            IMqttClient publisher = new MqttClient("tcp://"+broker+":"+brokerPort,uuid.toString());
             //The code used to establish a connection to the server typically looks like this:
             MqttConnectOptions options = new MqttConnectOptions();
             options.setAutomaticReconnect(true); //auto-reconnect after failure

@@ -17,7 +17,8 @@ public class MQTTReceiver implements MqttCallback{
     public MQTTReceiver() throws MqttException{
         this.sensorData = new ArrayList<SensorData>();
         String broker = System.getenv("Broker");
-        this.mqttClient = new MqttClient("tcp://localhost:1883",uuid.toString());
+        String brokerPort = System.getenv("Brokerport");
+        this.mqttClient = new MqttClient("tcp://"+broker+":"+brokerPort,uuid.toString());
     }
 
     public ArrayList<SensorData> getSensorData() {
@@ -96,7 +97,6 @@ public class MQTTReceiver implements MqttCallback{
         } catch (MqttException e) {
             System.out.println("Failed to get delivery token message: " + e.getMessage());
         }
-
     }
 }
 
