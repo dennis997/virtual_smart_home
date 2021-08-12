@@ -17,7 +17,7 @@ public class Main {
             location = System.getenv("LOCATION");
             sleeptimer = Integer.parseInt(System.getenv("SLEEPTIMER"));
             mqtt = Integer.parseInt(System.getenv("MQTT"));
-            SmartHome_Sensor sensor = new SmartHome_Sensor(ip,port,location,sleeptimer, mqtt);
+            SmartHomeSensor sensor = new SmartHomeSensor(ip,port,location,sleeptimer, mqtt);
             sensor.sendData();
         }
         catch (Exception e){

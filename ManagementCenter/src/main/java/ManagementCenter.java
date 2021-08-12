@@ -32,7 +32,7 @@ public class ManagementCenter {
                 System.out.println("[INFO] Using default IP/Port Configuration");
                 serverIP = "localhost";
                 sensorSocketPort = 5000;
-                httpServerPort = 6000;
+                httpServerPort = 7000;
                 MQTT = 1;
             }
         } catch (Exception e) {

@@ -13,11 +13,11 @@ public class MQTTReceiver implements MqttCallback{
     private static UUID uuid = UUID.randomUUID();
     private static MqttClient mqttClient;
 
-
+//+broker
     public MQTTReceiver() throws MqttException{
         this.sensorData = new ArrayList<SensorData>();
         String broker = System.getenv("Broker");
-        this.mqttClient = new MqttClient("tcp://"+broker+":1883",uuid.toString());
+        this.mqttClient = new MqttClient("tcp://localhost:1883",uuid.toString());
     }
 
     public ArrayList<SensorData> getSensorData() {
@@ -81,7 +81,6 @@ public class MQTTReceiver implements MqttCallback{
      */
     @Override
     public void messageArrived(String s, MqttMessage mqttMessage) throws Exception {
-        System.out.println("Message received: "+ new String(mqttMessage.getPayload()));
         sensorData.add(parseReceivedData(new String(mqttMessage.getPayload())));
     }
     /*
@@ -92,7 +91,6 @@ public class MQTTReceiver implements MqttCallback{
      */
     @Override
     public void deliveryComplete(IMqttDeliveryToken MqttDeliveryToken) {
-
         try {
             System.out.println("Delivery completed: "+ MqttDeliveryToken.getMessage() );
         } catch (MqttException e) {
