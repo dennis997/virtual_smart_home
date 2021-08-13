@@ -49,7 +49,7 @@ public class ManagementCenter {
                 mqttBrokerName = "localhost";
                 mqttBrokerPort = 1883;
                 sensorSocketPort = 5000;
-                MQTT = 1; //UDP or MQTT?
+                MQTT = 0; //UDP or MQTT?
                 httpServerPort = 7001;
                 thriftServerPort = 9002;
             }

@@ -42,7 +42,6 @@ public class DBConnector {
                 "temperature", resource.temp).append(
                 "brightness", resource.brightness).append(
                 "volume", resource.volume);
-
         try {
             mCollection.insertOne(document);
         } catch (MongoWriteException mwe) {

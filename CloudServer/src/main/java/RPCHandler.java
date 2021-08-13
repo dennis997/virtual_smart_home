@@ -14,15 +14,6 @@ public class RPCHandler implements SensorResourceService.Iface {
     @Override
     public boolean persistSensorData(SensorResource resource) {
         return dbConnector.persist(resource);
-/*        SensorData testSensorData = new SensorData(
-                resource.location,
-                resource.timestamp,
-                resource.humidity,
-                resource.temp,
-                resource.brightness,
-                resource.volume);
-
-        System.out.println(testSensorData);*/
     }
 
     @Override

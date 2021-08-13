@@ -34,6 +34,7 @@ public class CloudConnector {
         sensorResource.brightness = sensorData.getBrightness();
         sensorResource.temp = sensorData.getTemp();
         sensorResource.volume = sensorData.getVolume();
+        sensorResource.humidity = sensorData.getHumidity();
         try {
             client.persistSensorData(sensorResource);
             transport.flush();
