@@ -8,7 +8,7 @@ LABEL stage build
 RUN mkdir ./app
 COPY . /app/
 WORKDIR /app
-RUN mvn package
+RUN mvn -f ./pom.xml clean package
 
 ###
 ### Run stage

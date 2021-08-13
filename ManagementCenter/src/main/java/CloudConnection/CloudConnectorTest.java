@@ -1,24 +1,24 @@
-import org.junit.Test;
-
+package CloudConnection;
+import Entities.SensorData;
+import org.testng.annotations.Test;
 import java.util.ArrayList;
 
 import static org.junit.Assert.*;
 
-public class SensorTest {
-    private SmartHomeSensor testSensor;
+public class CloudConnectorTest {
+    private CloudConnector cloudConnector;
 
-    public SensorTest() throws Exception {
-        this.testSensor = new SmartHomeSensor("localhost", 5000, "testLocation", 1000,0);
+    public CloudConnectorTest() throws Exception {
+        this.cloudConnector = new CloudConnector("localhost", 9002);
     }
 
     @Test
-    public void testSensorData() throws InterruptedException {
+    public void testPersistingPerformance() throws Exception {
 
-        ArrayList<Long> timeList = new ArrayList<Long>();
         long sum = 0;
         for (int i = 0; i < 20; i++) {
             long startTime = System.currentTimeMillis();
-            testSensor.sendData(1);
+            cloudConnector.sendSensorData(new SensorData("Testlocation", "TestTimestamp", 0, 0, 0, 0));
             long time = System.currentTimeMillis() - startTime;
             System.out.println("Finished Round: " + (i+1) + " ("+time+"ms)");
             sum += time;
@@ -28,4 +28,3 @@ public class SensorTest {
         assertTrue(sum/20 < 5000);
     }
 }
-

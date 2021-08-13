@@ -1,3 +1,5 @@
+import CloudConnection.CloudConnectorTest;
+
 public class Main {
 
     /**
@@ -9,5 +11,7 @@ public class Main {
         ManagementCenter managementCenter = new ManagementCenter();
         managementCenter.runSensorReceiver();
         managementCenter.runHTTPServer();
+/*        CloudConnectorTest cloudConnectorTest = new CloudConnectorTest();
+        cloudConnectorTest.testPersistingPerformance();*/
     }
 }

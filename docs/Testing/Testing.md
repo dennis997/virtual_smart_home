@@ -17,8 +17,9 @@
 
 ### Performance Tests
 - Latency within range of usability [PASSED]
+- Checked Round-Trip Trip Time of Request (RPC Call from MC --> CloudServer RPCHandler --> DB Persist())
 
-
+![](./db_persisting_data2.png)
 
 
 ## <u>Practical 4</u>

@@ -28,6 +28,7 @@ public class CloudConnector {
         }
 
     public void sendSensorData(SensorData sensorData) {
+        long measuredTime = 0;
         SensorResource sensorResource = new SensorResource();
         sensorResource.location = sensorData.getLocation();
         sensorResource.timestamp = sensorData.getTimestamp();
@@ -36,6 +37,7 @@ public class CloudConnector {
         sensorResource.volume = sensorData.getVolume();
         sensorResource.humidity = sensorData.getHumidity();
         try {
+            measuredTime = System.currentTimeMillis();
             client.persistSensorData(sensorResource);
             transport.flush();
         }
