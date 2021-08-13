@@ -8,15 +8,24 @@ import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.TTransportException;
 import gen.*;
 
+/**
+ * CloudConnector is the communication endpoint for the RPC-Thrift connection between ManagementCenter and CloudServer
+ * RPC-Calls are being transmitted via TBinaryProtocol
+ */
 public class CloudConnector {
     private static SensorResourceService.Client client;
     private static TTransport transport;
     private static TProtocol protocol;
 
-
+    /**
+     *
+     * The CloudConnector constructor initializes the RPC-Thrift connection via the corresponding socket or default hardcoded values for IDE-testing
+     * @param serverName hostname to be used for binding
+     * @param thriftServerPort port to be binded
+     */
     public CloudConnector(String serverName, int thriftServerPort) {
             try {
-                System.out.println("Servername: " + serverName + " Sererport: " + thriftServerPort);
+                System.out.println("Servername: " + serverName + " Serverport: " + thriftServerPort);
                 transport = new TSocket(serverName, thriftServerPort);
                 transport.open();
                 protocol = new TBinaryProtocol(transport);
@@ -27,6 +36,10 @@ public class CloudConnector {
             }
         }
 
+    /**
+     * Parses the passed SensorData object to a sensorResouce object for RPC-Thrift transmission and sends it out
+     * @param sensorData to be transmitted resp. persisted in DB
+     */
     public void sendSensorData(SensorData sensorData) {
         long measuredTime = 0;
         SensorResource sensorResource = new SensorResource();
@@ -37,7 +50,6 @@ public class CloudConnector {
         sensorResource.volume = sensorData.getVolume();
         sensorResource.humidity = sensorData.getHumidity();
         try {
-            measuredTime = System.currentTimeMillis();
             client.persistSensorData(sensorResource);
             transport.flush();
         }

@@ -5,12 +5,20 @@ import org.apache.thrift.transport.TServerSocket;
 import org.apache.thrift.transport.TServerTransport;
 import org.apache.thrift.transport.TTransportException;
 
+/**
+ * CloudServer is the communication endpoint for the RPC-Thrift connection between ManagementCenter and CloudServer
+ * RPC-Calls are being transmitted via TBinaryProtocol
+ */
 public class CloudServer {
     private TThreadPoolServer threadPoolserver;
     private TServerTransport serverTransport;
     private int cloudServerPort;
 
-    public CloudServer() throws TTransportException, InterruptedException {
+    /**
+     * CloudServer Constructor initializes the Thrift Socket, Logging and creates and starts the TThreadPoolServer
+     * @throws TTransportException
+     */
+    public CloudServer() throws TTransportException {
 
         try {
             if (System.getenv("THRIFT_SERVER_PORT") != null) {
@@ -21,7 +29,8 @@ public class CloudServer {
         } catch (Exception e) {
             e.printStackTrace();
         }
-            BasicConfigurator.configure();
+        // Initializes the Log4j library with the correct appenders to display logs
+        BasicConfigurator.configure();
         serverTransport = new TServerSocket(cloudServerPort);
         try {
             threadPoolserver = createServer(serverTransport);
@@ -30,12 +39,21 @@ public class CloudServer {
         }
     }
 
+    /**
+     * A TThreadPoolServer is being created to handle incoming RPC-Thrift Requests in separate Threads
+     * @param serverTransport
+     * @return TServerSocket object with the corresponding port to listen to
+     * @throws Exception
+     */
     public TThreadPoolServer createServer(TServerTransport serverTransport) throws Exception {
         return new TThreadPoolServer(new TThreadPoolServer.Args(serverTransport)
                 .processor(new SensorResourceService.Processor<>(new RPCHandler())));
     }
 
-    public void start() throws TTransportException, InterruptedException {
+    /**
+     * Starts the TThreadPoolserver with blocking call so a new Thread is being spawned for this service module
+     */
+    public void start(){
         new Thread(() -> {
             try {
                 this.threadPoolserver.serve();
@@ -46,6 +64,9 @@ public class CloudServer {
         System.out.println("[SERVICEPROVIDER] Server is up and running...");
     }
 
+    /**
+     * Stops the TThreadPoolserver
+     */
     public void shutDown() {
         if (threadPoolserver != null && threadPoolserver.isServing()) {
             threadPoolserver.stop();

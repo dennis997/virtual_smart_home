@@ -6,13 +6,20 @@ import com.mongodb.client.MongoDatabase;
 import gen.SensorResource;
 import org.bson.Document;
 
+/**
+ * DBConnector handles the database connection to MongoDB server instance
+ */
 public class DBConnector {
     private final MongoDatabase database;
     private final String collectionName = "SmartHome";
     private static String cloudServerName;
     private static int cloudServerPort;
 
-    public DBConnector() throws Exception {
+    /**
+     * The DBConnector constructor initializes the DB Connection via env-variables or default hardcoded values for IDE-testing
+     * A database instance is being created and can be referenced by the following methods.
+     */
+    public DBConnector() {
 
         if ( //start in Docker
                 (System.getenv("DB_SERVER_NAME") != null) || (System.getenv("DB_SERVER_PORT") != null)) {
@@ -28,6 +35,11 @@ public class DBConnector {
         database = mClient.getDatabase("SmartHome");
     }
 
+    /**
+     * Persists a SensorResource object as a new document into the created mongo collection
+     * @param resource object being transmitted via RPC-Thrift
+     * @return whether persisting the resource has been successful or not
+     */
     public Boolean persist(SensorResource resource) {
         /*
         Choosing WriteConcern.MAJORITY to indicate, that write operations have been propagated to other mongo db instances
