@@ -116,6 +116,8 @@ services:
         image: mongo
         restart: always
         container_name: "mongo"
+        logging:
+            driver: none
 
     mongo-express:
         image: mongo-express
@@ -124,6 +126,8 @@ services:
             - "8081:8081"
         links:
             - mongo
+        logging:
+            driver: none
         environment:
             ME_CONFIG_MONGODB_ADMINUSERNAME: root
             ME_CONFIG_MONGODB_ADMINPASSWORD: example
