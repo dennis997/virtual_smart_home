@@ -14,9 +14,10 @@ public class CloudConnector {
     private static TProtocol protocol;
 
 
-    public CloudConnector(String serviceProviderIp, int serviceProviderPort) {
+    public CloudConnector(String serverName, int thriftServerPort) {
             try {
-                transport = new TSocket(serviceProviderIp, serviceProviderPort);
+                System.out.println("Servername: " + serverName + " Sererport: " + thriftServerPort);
+                transport = new TSocket(serverName, thriftServerPort);
                 transport.open();
                 protocol = new TBinaryProtocol(transport);
                 client = new SensorResourceService.Client(protocol);

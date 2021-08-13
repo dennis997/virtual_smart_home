@@ -97,7 +97,6 @@ public class SmartHomeSensor {
      */
 
     public void sendData() throws InterruptedException {
-
         if (mqtt == 1) {
             while(true) {
                 byte[] sensorData = generateSensorData();
@@ -132,13 +131,29 @@ public class SmartHomeSensor {
      * @throws InterruptedException
      */
     public void sendData(int amount) throws InterruptedException {
-        for (int count = 0; count != amount; count++) {
-            byte[] sensorData = generateSensorData();
-            DatagramPacket sendPacket = new DatagramPacket(sensorData, sensorData.length, this.IPAddress , this.port);
-            try {
-                clientSocket.send(sendPacket);
-            } catch (IOException e) {
-                e.printStackTrace();
+        if (mqtt == 1) {
+            for (int i = 0; i < amount; i++){
+                byte[] sensorData = generateSensorData();
+                MqttMessage mqttMessage = new MqttMessage(sensorData);
+                // TODO: QoS should be 1 or 2 in P5!
+                mqttMessage.setQos(0); // Quality of Service: we don`t care that we lose Packages, just like UDP.
+                mqttMessage.setRetained(true); //This flag indicates to the broker that it should retain this message until consumed by a subscriber.
+                try {
+                    pub.publish("sensor", mqttMessage); //publishing the message with topic "sensor" (?)
+                }
+                catch (MqttException e){
+                    e.printStackTrace();
+                }
+            }
+        } else {
+            for (int i = 0; i < amount; i++){
+                byte[] sensorData = generateSensorData();
+                DatagramPacket sendPacket = new DatagramPacket(sensorData, sensorData.length, this.IPAddress, this.port);
+                try {
+                    clientSocket.send(sendPacket);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }

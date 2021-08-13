@@ -30,12 +30,9 @@ public class ManagementCenter {
     ManagementCenter() throws Exception{
         try{
             if ( //start in Docker
-                    (System.getenv("SENSOR_RECEIVER_PORT") != null) ||
-                    (System.getenv("HTTP_SERVER_PORT") != null) ||
-                    (System.getenv("THRIFT_SERVER_PORT") != null) ||
-                    (System.getenv("BROKER") != null) ||
-                    (System.getenv("BROKER_PORT") != null) ||
-                            (System.getenv("SERVER_NAME") != null))
+                    (System.getenv("SENSOR_RECEIVER_PORT") != null) || (System.getenv("HTTP_SERVER_PORT") != null) ||
+                    (System.getenv("THRIFT_SERVER_PORT") != null) || (System.getenv("BROKER") != null) ||
+                    (System.getenv("BROKER_PORT") != null) || (System.getenv("SERVER_NAME") != null))
             {
                 sensorSocketPort = Integer.parseInt(System.getenv("SENSOR_RECEIVER_PORT"));
                 httpServerPort = Integer.parseInt(System.getenv("HTTP_SERVER_PORT"));

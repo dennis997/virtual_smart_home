@@ -1,4 +1,7 @@
 import org.junit.Test;
+
+import java.util.ArrayList;
+
 import static org.junit.Assert.*;
 
 public class SensorTest {
@@ -10,11 +13,19 @@ public class SensorTest {
 
     @Test
     public void testSensorData() throws InterruptedException {
-        long startTime = System.currentTimeMillis();
-        testSensor.sendData();
-        long estimatedTime = System.currentTimeMillis() - startTime;
-        System.out.println("Sent out 10000 datasets ind " + estimatedTime + "ms!");
-        assertTrue(estimatedTime < 5000);
+
+        ArrayList<Long> timeList = new ArrayList<Long>();
+        long sum = 0;
+        for (int i = 0; i < 20; i++) {
+            long startTime = System.currentTimeMillis();
+            testSensor.sendData(10000);
+            long time = System.currentTimeMillis() - startTime;
+            System.out.println("Finished Round: " + (i+1) + " ("+time+"ms)");
+            sum += time;
+        }
+        System.out.println("Finished!");
+        System.out.println("Average time out of 20 test runs: " + sum/20 + "ms");
+        assertTrue(sum/20 < 5000);
     }
 }
 
