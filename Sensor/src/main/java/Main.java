@@ -28,7 +28,6 @@ public class Main {
                 sleeptimer = 5000;
                 mqtt = 0; // UDP or MQTT
                 SmartHomeSensor sensor = new SmartHomeSensor(ip,port,location,sleeptimer,mqtt);
-                System.out.println("Sending Data!");
                 sensor.sendData();
 
             }

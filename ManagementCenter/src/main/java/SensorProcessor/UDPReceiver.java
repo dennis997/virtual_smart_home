@@ -1,6 +1,8 @@
 package SensorProcessor;
 import CloudConnection.CloudConnector;
 import Entities.SensorData;
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Logger;
 import org.json.JSONObject;
 
 import java.net.*;
@@ -15,6 +17,7 @@ public class UDPReceiver {
     private DatagramSocket serverSocket;
     private static ArrayList<SensorData> sensorData;
     private static CloudConnector cloudConnector;
+    private static Logger logger;
 
     /**
      * Constructor creates the datastructure to save the sensorData and initializes a new UDP Socket
@@ -25,6 +28,8 @@ public class UDPReceiver {
         this.serverSocket = new DatagramSocket(serverSocketPort);
         this.sensorData = new ArrayList<SensorData>();
         this.cloudConnector = cloudConnector;
+        logger = Logger.getLogger(UDPReceiver.class);
+        BasicConfigurator.configure();
     }
 
     /**
@@ -55,7 +60,6 @@ public class UDPReceiver {
         int volume = (int) jsonSensorData.get("volume");
 
         SensorData sensorDataObject = new SensorData(location, timestamp, humidity, temp, brightness, volume);
-        System.out.println(sensorDataObject);
         return sensorDataObject;
     }
 
@@ -65,8 +69,9 @@ public class UDPReceiver {
      */
     public void receiveData() throws Exception {
         byte[] data = new byte[256];
-        System.out.println("[UDPReceiver] Listening on Port " + this.serverSocket.getLocalPort());
-        System.out.println("[UDPReceiver] Ready to receive data...");
+
+        logger.info("Listening on UDP port " + this.serverSocket.getLocalPort());
+        logger.info("Ready to receive sensor data...");
         while(true) {
             DatagramPacket receivePacket = new DatagramPacket(data, data.length);
             this.serverSocket.receive(receivePacket);

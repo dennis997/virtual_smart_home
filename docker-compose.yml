@@ -1,6 +1,14 @@
-version: '3'
+version: "3.7"
 
 services:
+    nginx:
+        container_name: "loadbalancer"
+        build:
+            context: ./
+            dockerfile: proxyfile
+        ports:
+            - "8082:80"
+
     ManagementCenter:
         image: "centerimage:latest"
         container_name: "managementcenter"

@@ -1,5 +1,7 @@
 import gen.SensorResourceService;
 import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.apache.thrift.server.TThreadPoolServer;
 import org.apache.thrift.transport.TServerSocket;
 import org.apache.thrift.transport.TServerTransport;
@@ -13,6 +15,7 @@ public class CloudServer {
     private TThreadPoolServer threadPoolserver;
     private TServerTransport serverTransport;
     private int cloudServerPort;
+    private Logger logger;
 
     /**
      * CloudServer Constructor initializes the Thrift Socket, Logging and creates and starts the TThreadPoolServer
@@ -30,6 +33,8 @@ public class CloudServer {
             e.printStackTrace();
         }
         // Initializes the Log4j library with the correct appenders to display logs
+        logger = Logger.getLogger(CloudServer.class);
+        Logger.getRootLogger().setLevel(Level.WARN);
         BasicConfigurator.configure();
         serverTransport = new TServerSocket(cloudServerPort);
         try {
@@ -61,7 +66,7 @@ public class CloudServer {
                 e.printStackTrace();
             }
         }).start();
-        System.out.println("[SERVICEPROVIDER] Server is up and running...");
+        logger.info("Server is up and running...");
     }
 
     /**
@@ -70,7 +75,7 @@ public class CloudServer {
     public void shutDown() {
         if (threadPoolserver != null && threadPoolserver.isServing()) {
             threadPoolserver.stop();
-            System.out.println("[SERVICEPROVIDER] Server stopped...");
+            logger.info("Server stopped!");
         }
     }
 }

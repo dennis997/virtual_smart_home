@@ -4,6 +4,8 @@ import java.sql.Timestamp;
 import java.util.UUID;
 
 import com.google.gson.Gson;
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Logger;
 import org.eclipse.paho.client.mqttv3.*;
 import org.json.JSONObject;
 
@@ -22,6 +24,7 @@ public class SmartHomeSensor {
     private static IMqttClient pub;
     private static String broker;
     private static int brokerPort;
+    private static Logger logger;
     /**
      *
      * @param ip of ManagementCenter within the internal docker network
@@ -31,6 +34,8 @@ public class SmartHomeSensor {
      * @throws Exception
      */
     public SmartHomeSensor(String ip, int port, String location, int sleeptimer, int mqtt) throws Exception {
+        logger = Logger.getLogger(SmartHomeSensor.class);
+        BasicConfigurator.configure();
         this.clientSocket = new DatagramSocket();
         this.port = port;
         this.IPAddress = InetAddress.getByName(ip);
@@ -59,9 +64,9 @@ public class SmartHomeSensor {
             options.setAutomaticReconnect(true); //auto-reconnect after failure
             options.setCleanSession(true); //unsent messages from previous session will be discarded
             options.setConnectionTimeout(10); //connection timeout at 10 seconds
-            System.out.println("Trying to connect...");
+            logger.info("Connecting to MQTT broker...");
             publisher.connect(options);
-            System.out.println("Connected to broker...");
+            logger.info("Connected to MQTT broker!");
             pub = publisher;
         }
     }

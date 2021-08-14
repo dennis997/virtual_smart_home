@@ -4,6 +4,8 @@ import com.mongodb.WriteConcern;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import gen.SensorResource;
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Logger;
 import org.bson.Document;
 
 /**
@@ -14,6 +16,7 @@ public class DBConnector {
     private final String collectionName = "SmartHome";
     private static String cloudServerName;
     private static int cloudServerPort;
+    private Logger logger;
 
     /**
      * The DBConnector constructor initializes the DB Connection via env-variables or default hardcoded values for IDE-testing
@@ -30,7 +33,8 @@ public class DBConnector {
             cloudServerName = "localhost";
             cloudServerPort = 27017;
         }
-
+        logger = Logger.getLogger(DBConnector.class);
+        BasicConfigurator.configure();
         MongoClient mClient = new MongoClient(cloudServerName, cloudServerPort);
         database = mClient.getDatabase("SmartHome");
     }
@@ -58,10 +62,10 @@ public class DBConnector {
             mCollection.insertOne(document);
         } catch (MongoWriteException mwe) {
             mwe.printStackTrace();
-            System.out.println("[DBServer] Failed to persist Sensordata from: " + resource.location);
+            logger.error("Failed to persist Sensordata from: [" + resource.location + "]");
             return false;
         }
-        System.out.println("[DBServer] Sensordata from " + resource.location + " has been successfully persisted!");
+        logger.info("Sensordata from [" + resource.location + "] has been successfully persisted!");
         return true;
     }
 

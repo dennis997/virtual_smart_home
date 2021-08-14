@@ -2,6 +2,8 @@ package SensorProcessor;
 
 import CloudConnection.CloudConnector;
 import Entities.SensorData;
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Logger;
 import org.eclipse.paho.client.mqttv3.*;
 import org.json.JSONObject;
 
@@ -14,12 +16,15 @@ public class MQTTReceiver implements MqttCallback{
     private static UUID uuid = UUID.randomUUID();
     private static MqttClient mqttClient;
     private static CloudConnector cloudConnector;
+    private static Logger logger;
 
 //+broker
     public MQTTReceiver(String mqttBrokerName, int mqttBrokerPort, CloudConnector cloudConnector) throws MqttException {
         this.sensorData = new ArrayList<SensorData>();
         this.mqttClient = new MqttClient("tcp://"+mqttBrokerName+":"+mqttBrokerPort,uuid.toString());
         this.cloudConnector = cloudConnector;
+        logger = Logger.getLogger(MQTTReceiver.class);
+        BasicConfigurator.configure();
     }
 
     public ArrayList<SensorData> getSensorData() {
@@ -47,11 +52,11 @@ public class MQTTReceiver implements MqttCallback{
         try{
             this.mqttClient.setCallback(this);
             this.mqttClient.connect();
-            System.out.println("[MQTTReceiver] Subscriber connected to MQTT broker");
+            logger.info("Subscriber connected to MQTT broker");
 
             // Subscribe to a topic.
             this.mqttClient.subscribe("sensor");
-            System.out.println("[MQTTReceiver] Subscribed to Topic Sensor");
+            logger.info("Subscribed to Topic Sensor");
         }
         catch(MqttException e){
             e.printStackTrace();
@@ -63,8 +68,7 @@ public class MQTTReceiver implements MqttCallback{
      */
     @Override
     public void connectionLost(Throwable throwable) {
-        System.out.println("Connection to MQTT broker lost!");
-
+        logger.error("Lost connection to MQTT broker!");
     }
     /*
     This method is called when a message arrives from the server.
@@ -95,9 +99,9 @@ public class MQTTReceiver implements MqttCallback{
     @Override
     public void deliveryComplete(IMqttDeliveryToken MqttDeliveryToken) {
         try {
-            System.out.println("Delivery completed: "+ MqttDeliveryToken.getMessage() );
+            logger.info("Delivery completed: "+ MqttDeliveryToken.getMessage());
         } catch (MqttException e) {
-            System.out.println("Failed to get delivery token message: " + e.getMessage());
+            logger.error("Failed to get delivery token message: " + e.getMessage());
         }
     }
 }

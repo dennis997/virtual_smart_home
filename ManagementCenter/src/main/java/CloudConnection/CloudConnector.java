@@ -1,5 +1,8 @@
 package CloudConnection;
 import Entities.SensorData;
+import SensorProcessor.MQTTReceiver;
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Logger;
 import org.apache.thrift.TException;
 import org.apache.thrift.transport.TTransport;
 import org.apache.thrift.transport.TSocket;
@@ -16,6 +19,7 @@ public class CloudConnector {
     private static SensorResourceService.Client client;
     private static TTransport transport;
     private static TProtocol protocol;
+    private static Logger logger;
 
     /**
      *
@@ -24,16 +28,18 @@ public class CloudConnector {
      * @param thriftServerPort port to be binded
      */
     public CloudConnector(String serverName, int thriftServerPort) {
-            try {
-                System.out.println("Servername: " + serverName + " Serverport: " + thriftServerPort);
-                transport = new TSocket(serverName, thriftServerPort);
-                transport.open();
-                protocol = new TBinaryProtocol(transport);
-                client = new SensorResourceService.Client(protocol);
-                System.out.println("[CloudConnector] RPC connection established!");
-            } catch (TTransportException e) {
-                System.out.println("[CloudConnector] RPC connection failed!");
-            }
+        logger = Logger.getLogger(CloudConnector.class);
+        BasicConfigurator.configure();
+        try {
+            System.out.println("Servername: " + serverName + " Serverport: " + thriftServerPort);
+            transport = new TSocket(serverName, thriftServerPort);
+            transport.open();
+            protocol = new TBinaryProtocol(transport);
+            client = new SensorResourceService.Client(protocol);
+            logger.info("RPC connection established!");
+        } catch (TTransportException e) {
+            logger.error("RPC connection failed!");;
+        }
         }
 
     /**

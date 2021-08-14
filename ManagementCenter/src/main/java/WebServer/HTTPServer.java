@@ -53,7 +53,6 @@ public class HTTPServer{
         System.out.println("[HTTPServer] Listening on Port " + this.httpSocket.getLocalPort());
         while (true) {
             Socket client = httpSocket.accept();
-            System.out.println(client);
             Thread t = new Thread(new Runnable() {
                 @Override
                 public void run() {
