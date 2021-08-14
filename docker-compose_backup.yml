@@ -1,0 +1,142 @@
+version: "3.7"
+
+services:
+    nginx:
+        container_name: "loadbalancer"
+        build:
+            context: ./
+            dockerfile: nginx_dockerfile
+        ports:
+            - "8082:80"
+
+    ManagementCenter:
+        image: "centerimage:latest"
+        container_name: "managementcenter"
+        restart: always
+        build:
+              context: ./ManagementCenter
+              dockerfile: Dockerfile
+        environment:
+            - SENSOR_RECEIVER_PORT=5000
+            - HTTP_SERVER_PORT=7001
+            - MQTT=1
+            - BROKER=mqttcontainer
+            - BROKER_PORT=1883
+            - THRIFT_SERVER_PORT=9002
+            - SERVER_NAME=cloudserver
+        ports:
+            - "7001:7001"
+        depends_on:
+            - CloudServer
+
+    CloudServer:
+        image: "cloudserverimage:latest"
+        restart: always
+        container_name: "cloudserver"
+        build:
+            context: ./CloudServer
+            dockerfile: Dockerfile
+        environment:
+           - DB_SERVER_NAME=mongo
+           - DB_SERVER_PORT=27017
+           - THRIFT_SERVER_PORT=9002
+        depends_on:
+            - MOSQUITTO
+
+    Sensor1:
+        image: "sensorimage:latest"
+        restart: always
+        container_name: "sensor1"
+        build:
+              context: ./Sensor
+              dockerfile: Dockerfile
+        environment:
+            - IP=managementcenter
+            - PORT=5000
+            - LOCATION=bathroom
+            - SLEEPTIMER=5000
+            - MQTT=1
+            - BROKER=mqttcontainer
+            - BROKER_PORT=1883
+        depends_on:
+            - ManagementCenter
+
+    Sensor2:
+        image: "sensorimage:latest"
+        restart: always
+        container_name: "sensor2"
+        build:
+              context: ./Sensor
+        environment:
+            - IP=managementcenter
+            - PORT=5000
+            - LOCATION=kitchen
+            - SLEEPTIMER=4000
+            - MQTT=1
+            - BROKER=mqttcontainer
+            - BROKER_PORT=1883
+        depends_on:
+            - ManagementCenter
+
+    Sensor3:
+        image: "sensorimage:latest"
+        restart: always
+        container_name: "sensor3"
+        build:
+              context: ./Sensor
+        environment:
+            - IP=managementcenter
+            - PORT=5000
+            - LOCATION=garden
+            - SLEEPTIMER=6000
+            - MQTT=1
+            - BROKER=mqttcontainer
+            - BROKER_PORT=1883
+        depends_on:
+            - ManagementCenter
+
+    Sensor4:
+        image: "sensorimage:latest"
+        restart: always
+        container_name: "sensor4"
+        build:
+              context: ./Sensor
+        environment:
+            - IP=managementcenter
+            - PORT=5000
+            - LOCATION=bedroom
+            - SLEEPTIMER=10000
+            - MQTT=1
+            - BROKER=mqttcontainer
+            - BROKER_PORT=1883
+        depends_on:
+            - ManagementCenter
+
+    MOSQUITTO:
+        image: eclipse-mosquitto:2.0.11
+        restart: always
+        container_name: "mqttcontainer"
+        command: mosquitto -c /mosquitto-no-auth.conf
+        depends_on:
+            - mongo
+
+    mongo:
+        image: mongo
+        restart: always
+        container_name: "mongo"
+        logging:
+            driver: none
+
+    mongo-express:
+        image: mongo-express
+        restart: always
+        ports:
+            - "8081:8081"
+        links:
+            - mongo
+        logging:
+            driver: none
+        environment:
+            ME_CONFIG_MONGODB_ADMINUSERNAME: root
+            ME_CONFIG_MONGODB_ADMINPASSWORD: example
+            ME_CONFIG_MONGODB_URL: mongodb://mongo:27017
