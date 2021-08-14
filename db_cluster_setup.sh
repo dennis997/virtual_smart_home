@@ -1,5 +1,5 @@
 #!/bin/bash
-sleep 20
+sleep 10
 
 echo SETUP.sh + "Initializing Mongo DB Cluster..."
 mongo --host mongo1:27017 <<EOF

@@ -4,6 +4,7 @@ services:
     # loadbalancer
     NGINX:
         container_name: "nginx"
+        image: "nginx"
         build:
             context: ./
             dockerfile: nginx_dockerfile
@@ -26,6 +27,7 @@ services:
             - SENSOR_RECEIVER_PORT=5001
             - HTTP_SERVER_PORT=7001
             - MQTT=1
+            - TOPIC=mc1
             - BROKER=mosquitto
             - BROKER_PORT=1883
             - THRIFT_SERVER_PORT=9002
@@ -116,6 +118,7 @@ services:
             - SENSOR_RECEIVER_PORT=5002
             - HTTP_SERVER_PORT=7002
             - MQTT=1
+            - TOPIC=mc2
             - BROKER=mosquitto
             - BROKER_PORT=1883
             - THRIFT_SERVER_PORT=9002
@@ -253,9 +256,9 @@ services:
     CLUSTERSETUP:
         image: mongo:3.6-jessie
         links:
-            - mongo1:mongo1
-            - mongo2:mongo2
-            - mongo3:mongo3
+            - MONGO1:MONGO1
+            - MONGO2:MONGO1
+            - MONGO3:MONGO1
         depends_on:
             - MONGO1
             - MONGO2
@@ -271,7 +274,7 @@ services:
         restart: always
         container_name: "mongo1"
         logging:
-            driver: none
+            driver: syslog
         volumes:
             - mongo1:/data/db
         entrypoint: ["/usr/bin/mongod", "--bind_ip_all", "--replSet", "replicaset"]
@@ -281,7 +284,7 @@ services:
         restart: always
         container_name: "mongo2"
         logging:
-            driver: none
+            driver: syslog
         volumes:
             - mongo2:/data/db
         entrypoint: ["/usr/bin/mongod", "--bind_ip_all", "--replSet", "replicaset"]
@@ -291,7 +294,7 @@ services:
         restart: always
         container_name: "mongo3"
         logging:
-            driver: none
+            driver: syslog
         volumes:
             - mongo3:/data/db
         entrypoint: ["/usr/bin/mongod", "--bind_ip_all", "--replSet", "replicaset"]
@@ -303,7 +306,7 @@ services:
         ports:
             - "8081:8081"
         links:
-            - mongo
+            - MONGO1
         logging:
             driver: none
         environment:

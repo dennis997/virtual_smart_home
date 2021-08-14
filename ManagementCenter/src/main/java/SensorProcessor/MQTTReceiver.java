@@ -15,6 +15,7 @@ public class MQTTReceiver implements MqttCallback{
     private static ArrayList<SensorData> sensorData;
     private static UUID uuid = UUID.randomUUID();
     private static MqttClient mqttClient;
+    private static String topic;
     private static CloudConnector cloudConnector;
     private static Logger logger;
 
@@ -23,6 +24,14 @@ public class MQTTReceiver implements MqttCallback{
         this.sensorData = new ArrayList<SensorData>();
         this.mqttClient = new MqttClient("tcp://"+mqttBrokerName+":"+mqttBrokerPort,uuid.toString());
         this.cloudConnector = cloudConnector;
+
+        if ( //start in Docker
+                (System.getenv("TOPIC") != null))
+        {
+            topic = System.getenv("TOPIC");
+        } else { //start in IDE
+            topic = "mc1";
+        }
         logger = Logger.getLogger(MQTTReceiver.class);
         BasicConfigurator.configure();
     }
@@ -55,8 +64,8 @@ public class MQTTReceiver implements MqttCallback{
             logger.info("Subscriber connected to MQTT broker");
 
             // Subscribe to a topic.
-            this.mqttClient.subscribe("sensor");
-            logger.info("Subscribed to Topic Sensor");
+            this.mqttClient.subscribe(topic);
+            logger.info("Subscribed to topic <<" + topic + ">>");
         }
         catch(MqttException e){
             e.printStackTrace();

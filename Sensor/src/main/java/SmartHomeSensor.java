@@ -25,6 +25,7 @@ public class SmartHomeSensor {
     private static String broker;
     private static int brokerPort;
     private static Logger logger;
+    private static String topic;
     /**
      *
      * @param ip of ManagementCenter within the internal docker network
@@ -33,7 +34,7 @@ public class SmartHomeSensor {
      * @param sleeptimer specifies the interval to send out data in ms
      * @throws Exception
      */
-    public SmartHomeSensor(String ip, int port, String location, int sleeptimer, int mqtt) throws Exception {
+    public SmartHomeSensor(String ip, int port, String location, int sleeptimer, int mqtt, String topic) throws Exception {
         logger = Logger.getLogger(SmartHomeSensor.class);
         BasicConfigurator.configure();
         this.clientSocket = new DatagramSocket();
@@ -43,6 +44,7 @@ public class SmartHomeSensor {
         this.sleeptimer = sleeptimer;
         this.uuid = UUID.randomUUID();
         this.mqtt = mqtt;
+        this.topic = topic;
 
         /*
         If mqtt equals 1, mqtt is activated. If its 0, we use Udp.
@@ -108,9 +110,9 @@ public class SmartHomeSensor {
                 MqttMessage mqttMessage = new MqttMessage(sensorData);
                 // TODO: QoS should be 1 or 2 in P5!
                 mqttMessage.setQos(0); // Quality of Service: we don`t care that we lose Packages, just like UDP.
-                mqttMessage.setRetained(true); //This flag indicates to the broker that it should retain this message until consumed by a subscriber.
+                mqttMessage.setRetained(true); // This flag indicates to the broker that it should retain this message until consumed by a subscriber.
                 try {
-                    pub.publish("sensor", mqttMessage); //publishing the message with topic "sensor" (?)
+                    pub.publish(topic, mqttMessage); // Publishing the message with the corresponding topic
                 }
                 catch (MqttException e){
                     e.printStackTrace();
