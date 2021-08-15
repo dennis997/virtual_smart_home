@@ -2,15 +2,15 @@
 sleep 10
 
 echo SETUP.sh + "Initializing Mongo DB Cluster..."
-mongo --host mongo1:27017 <<EOF
+mongo --host mongo:27017 <<EOF
   var config_json = {
-    "_id": "replicaset",
+    "_id": "rs0",
     "version": 1,
     "members": [
       {
         "_id": 0,
-        "host": "mongo1:27017",
-        "priority": 1000
+        "host": "mongo:27017",
+        "priority": 2
       },
       {
         "_id": 1,

@@ -235,7 +235,7 @@ services:
         container_name: "mosquitto"
         command: mosquitto -c /mosquitto-no-auth.conf
         depends_on:
-            - mongo1
+            - mongo
         networks:
             - smarthome
 
@@ -250,7 +250,7 @@ services:
             context: ./CloudServer
             dockerfile: Dockerfile
         environment:
-           - DB_SERVER_NAME=mongo1
+           - DB_SERVER_NAME=mongo
            - DB_SERVER_PORT=27017
            - THRIFT_SERVER_PORT=9002
         depends_on:
@@ -266,7 +266,7 @@ services:
             context: ./CloudServer
             dockerfile: Dockerfile
         environment:
-           - DB_SERVER_NAME=mongo1
+           - DB_SERVER_NAME=mongo
            - DB_SERVER_PORT=27017
            - THRIFT_SERVER_PORT=9002
         depends_on:
@@ -294,11 +294,11 @@ services:
     clustersetup:
         image: mongo:3.6-jessie
         links:
-            - mongo1:mongo1
+            - mongo:mongo
             - mongo2:mongo2
             - mongo3:mongo3
         depends_on:
-            - mongo1
+            - mongo
             - mongo2
             - mongo3
         volumes:
@@ -309,7 +309,7 @@ services:
             - smarthome
 
     #---------DB_Instances----------#
-    mongo1:
+    mongo:
         image: mongo
         restart: always
         container_name: "mongo1"
@@ -346,13 +346,13 @@ services:
         ports:
             - "8081:8081"
         links:
-            - mongo1
+            - mongo
         logging:
             driver: none
         environment:
             ME_CONFIG_MONGODB_ADMINUSERNAME: root
             ME_CONFIG_MONGODB_ADMINPASSWORD: example
-            ME_CONFIG_MONGODB_URL: mongodb://mongo1:27017
+            ME_CONFIG_MONGODB_URL: mongodb://mongo:27017
         depends_on:
             -   clustersetup
         networks:

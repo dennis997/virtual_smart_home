@@ -104,8 +104,10 @@ public class SmartHomeSensor {
      */
 
     public void sendData() throws InterruptedException {
+        Thread.sleep(15000);
         if (mqtt == 1) {
             while(true) {
+                // TODO: JUST FOR TESTING! DELETE AFTERWARDS!!!
                 byte[] sensorData = generateSensorData();
                 MqttMessage mqttMessage = new MqttMessage(sensorData);
                 // TODO: QoS should be 1 or 2 in P5!
