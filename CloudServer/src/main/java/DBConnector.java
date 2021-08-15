@@ -5,6 +5,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import gen.SensorResource;
 import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.bson.Document;
 
@@ -35,6 +36,7 @@ public class DBConnector {
         }
         logger = Logger.getLogger(DBConnector.class);
         BasicConfigurator.configure();
+        logger.setLevel(Level.WARN);
         MongoClient mClient = new MongoClient(cloudServerName, cloudServerPort);
         database = mClient.getDatabase("SmartHome");
     }
@@ -47,7 +49,7 @@ public class DBConnector {
     public Boolean persist(SensorResource resource) {
         /*
         Choosing WriteConcern.MAJORITY to indicate, that write operations have been propagated to other mongo db instances
-        This will be relevant in P5!
+        This is relevant for P5
          */
         MongoCollection<Document> mCollection = database.getCollection(collectionName).withWriteConcern(WriteConcern.MAJORITY);
 
@@ -57,7 +59,8 @@ public class DBConnector {
                 "humidity", resource.humidity).append(
                 "temperature", resource.temp).append(
                 "brightness", resource.brightness).append(
-                "volume", resource.volume);
+                "volume", resource.volume).append(
+                "mc", resource.topic);
         try {
             mCollection.insertOne(document);
         } catch (MongoWriteException mwe) {
@@ -65,7 +68,9 @@ public class DBConnector {
             logger.error("Failed to persist Sensordata from: [" + resource.location + "]");
             return false;
         }
+        logger.setLevel(Level.INFO);
         logger.info("Sensordata from [" + resource.location + "] has been successfully persisted!");
+        logger.setLevel(Level.WARN);
         return true;
     }
 

@@ -12,6 +12,7 @@ struct SensorResource {
     4: i32 temp,
     5: i32 brightness,
     6: i32 volume
+    7: string topic
 }
 
 service SensorResourceService {

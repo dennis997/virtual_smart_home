@@ -4,7 +4,7 @@
  * DO NOT EDIT UNLESS YOU ARE SURE THAT YOU KNOW WHAT YOU ARE DOING
  *  @generated
  */
-package gen;
+package managementcenter;
 
 @SuppressWarnings({"cast", "rawtypes", "serial", "unchecked", "unused"})
 public class SensorResource implements org.apache.thrift.TBase<SensorResource, SensorResource._Fields>, java.io.Serializable, Cloneable, Comparable<SensorResource> {
@@ -21,13 +21,13 @@ public class SensorResource implements org.apache.thrift.TBase<SensorResource, S
   private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new SensorResourceStandardSchemeFactory();
   private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new SensorResourceTupleSchemeFactory();
 
-  public @org.apache.thrift.annotation.Nullable String location; // required
-  public @org.apache.thrift.annotation.Nullable String timestamp; // required
+  public @org.apache.thrift.annotation.Nullable java.lang.String location; // required
+  public @org.apache.thrift.annotation.Nullable java.lang.String timestamp; // required
   public int humidity; // required
   public int temp; // required
   public int brightness; // required
   public int volume; // required
-  public @org.apache.thrift.annotation.Nullable String topic; // required
+  public @org.apache.thrift.annotation.Nullable java.lang.String topic; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -39,7 +39,7 @@ public class SensorResource implements org.apache.thrift.TBase<SensorResource, S
     VOLUME((short)6, "volume"),
     TOPIC((short)7, "topic");
 
-    private static final java.util.Map<String, _Fields> byName = new java.util.HashMap<String, _Fields>();
+    private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
 
     static {
       for (_Fields field : java.util.EnumSet.allOf(_Fields.class)) {
@@ -78,7 +78,7 @@ public class SensorResource implements org.apache.thrift.TBase<SensorResource, S
      */
     public static _Fields findByThriftIdOrThrow(int fieldId) {
       _Fields fields = findByThriftId(fieldId);
-      if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+      if (fields == null) throw new java.lang.IllegalArgumentException("Field " + fieldId + " doesn't exist!");
       return fields;
     }
 
@@ -86,14 +86,14 @@ public class SensorResource implements org.apache.thrift.TBase<SensorResource, S
      * Find the _Fields constant that matches name, or null if its not found.
      */
     @org.apache.thrift.annotation.Nullable
-    public static _Fields findByName(String name) {
+    public static _Fields findByName(java.lang.String name) {
       return byName.get(name);
     }
 
     private final short _thriftId;
-    private final String _fieldName;
+    private final java.lang.String _fieldName;
 
-    _Fields(short thriftId, String fieldName) {
+    _Fields(short thriftId, java.lang.String fieldName) {
       _thriftId = thriftId;
       _fieldName = fieldName;
     }
@@ -102,7 +102,7 @@ public class SensorResource implements org.apache.thrift.TBase<SensorResource, S
       return _thriftId;
     }
 
-    public String getFieldName() {
+    public java.lang.String getFieldName() {
       return _fieldName;
     }
   }
@@ -138,13 +138,13 @@ public class SensorResource implements org.apache.thrift.TBase<SensorResource, S
   }
 
   public SensorResource(
-    String location,
-    String timestamp,
+    java.lang.String location,
+    java.lang.String timestamp,
     int humidity,
     int temp,
     int brightness,
     int volume,
-    String topic)
+    java.lang.String topic)
   {
     this();
     this.location = location;
@@ -200,11 +200,11 @@ public class SensorResource implements org.apache.thrift.TBase<SensorResource, S
   }
 
   @org.apache.thrift.annotation.Nullable
-  public String getLocation() {
+  public java.lang.String getLocation() {
     return this.location;
   }
 
-  public SensorResource setLocation(@org.apache.thrift.annotation.Nullable String location) {
+  public SensorResource setLocation(@org.apache.thrift.annotation.Nullable java.lang.String location) {
     this.location = location;
     return this;
   }
@@ -225,11 +225,11 @@ public class SensorResource implements org.apache.thrift.TBase<SensorResource, S
   }
 
   @org.apache.thrift.annotation.Nullable
-  public String getTimestamp() {
+  public java.lang.String getTimestamp() {
     return this.timestamp;
   }
 
-  public SensorResource setTimestamp(@org.apache.thrift.annotation.Nullable String timestamp) {
+  public SensorResource setTimestamp(@org.apache.thrift.annotation.Nullable java.lang.String timestamp) {
     this.timestamp = timestamp;
     return this;
   }
@@ -342,11 +342,11 @@ public class SensorResource implements org.apache.thrift.TBase<SensorResource, S
   }
 
   @org.apache.thrift.annotation.Nullable
-  public String getTopic() {
+  public java.lang.String getTopic() {
     return this.topic;
   }
 
-  public SensorResource setTopic(@org.apache.thrift.annotation.Nullable String topic) {
+  public SensorResource setTopic(@org.apache.thrift.annotation.Nullable java.lang.String topic) {
     this.topic = topic;
     return this;
   }
@@ -366,13 +366,13 @@ public class SensorResource implements org.apache.thrift.TBase<SensorResource, S
     }
   }
 
-  public void setFieldValue(_Fields field, @org.apache.thrift.annotation.Nullable Object value) {
+  public void setFieldValue(_Fields field, @org.apache.thrift.annotation.Nullable java.lang.Object value) {
     switch (field) {
     case LOCATION:
       if (value == null) {
         unsetLocation();
       } else {
-        setLocation((String)value);
+        setLocation((java.lang.String)value);
       }
       break;
 
@@ -380,7 +380,7 @@ public class SensorResource implements org.apache.thrift.TBase<SensorResource, S
       if (value == null) {
         unsetTimestamp();
       } else {
-        setTimestamp((String)value);
+        setTimestamp((java.lang.String)value);
       }
       break;
 
@@ -388,7 +388,7 @@ public class SensorResource implements org.apache.thrift.TBase<SensorResource, S
       if (value == null) {
         unsetHumidity();
       } else {
-        setHumidity((Integer)value);
+        setHumidity((java.lang.Integer)value);
       }
       break;
 
@@ -396,7 +396,7 @@ public class SensorResource implements org.apache.thrift.TBase<SensorResource, S
       if (value == null) {
         unsetTemp();
       } else {
-        setTemp((Integer)value);
+        setTemp((java.lang.Integer)value);
       }
       break;
 
@@ -404,7 +404,7 @@ public class SensorResource implements org.apache.thrift.TBase<SensorResource, S
       if (value == null) {
         unsetBrightness();
       } else {
-        setBrightness((Integer)value);
+        setBrightness((java.lang.Integer)value);
       }
       break;
 
@@ -412,7 +412,7 @@ public class SensorResource implements org.apache.thrift.TBase<SensorResource, S
       if (value == null) {
         unsetVolume();
       } else {
-        setVolume((Integer)value);
+        setVolume((java.lang.Integer)value);
       }
       break;
 
@@ -420,7 +420,7 @@ public class SensorResource implements org.apache.thrift.TBase<SensorResource, S
       if (value == null) {
         unsetTopic();
       } else {
-        setTopic((String)value);
+        setTopic((java.lang.String)value);
       }
       break;
 
@@ -428,7 +428,7 @@ public class SensorResource implements org.apache.thrift.TBase<SensorResource, S
   }
 
   @org.apache.thrift.annotation.Nullable
-  public Object getFieldValue(_Fields field) {
+  public java.lang.Object getFieldValue(_Fields field) {
     switch (field) {
     case LOCATION:
       return getLocation();
@@ -452,13 +452,13 @@ public class SensorResource implements org.apache.thrift.TBase<SensorResource, S
       return getTopic();
 
     }
-    throw new IllegalStateException();
+    throw new java.lang.IllegalStateException();
   }
 
   /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
   public boolean isSet(_Fields field) {
     if (field == null) {
-      throw new IllegalArgumentException();
+      throw new java.lang.IllegalArgumentException();
     }
 
     switch (field) {
@@ -477,11 +477,11 @@ public class SensorResource implements org.apache.thrift.TBase<SensorResource, S
     case TOPIC:
       return isSetTopic();
     }
-    throw new IllegalStateException();
+    throw new java.lang.IllegalStateException();
   }
 
   @Override
-  public boolean equals(Object that) {
+  public boolean equals(java.lang.Object that) {
     if (that == null)
       return false;
     if (that instanceof SensorResource)
@@ -596,7 +596,7 @@ public class SensorResource implements org.apache.thrift.TBase<SensorResource, S
 
     int lastComparison = 0;
 
-    lastComparison = Boolean.valueOf(isSetLocation()).compareTo(other.isSetLocation());
+    lastComparison = java.lang.Boolean.valueOf(isSetLocation()).compareTo(other.isSetLocation());
     if (lastComparison != 0) {
       return lastComparison;
     }
@@ -606,7 +606,7 @@ public class SensorResource implements org.apache.thrift.TBase<SensorResource, S
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetTimestamp()).compareTo(other.isSetTimestamp());
+    lastComparison = java.lang.Boolean.valueOf(isSetTimestamp()).compareTo(other.isSetTimestamp());
     if (lastComparison != 0) {
       return lastComparison;
     }
@@ -616,7 +616,7 @@ public class SensorResource implements org.apache.thrift.TBase<SensorResource, S
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetHumidity()).compareTo(other.isSetHumidity());
+    lastComparison = java.lang.Boolean.valueOf(isSetHumidity()).compareTo(other.isSetHumidity());
     if (lastComparison != 0) {
       return lastComparison;
     }
@@ -626,7 +626,7 @@ public class SensorResource implements org.apache.thrift.TBase<SensorResource, S
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetTemp()).compareTo(other.isSetTemp());
+    lastComparison = java.lang.Boolean.valueOf(isSetTemp()).compareTo(other.isSetTemp());
     if (lastComparison != 0) {
       return lastComparison;
     }
@@ -636,7 +636,7 @@ public class SensorResource implements org.apache.thrift.TBase<SensorResource, S
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetBrightness()).compareTo(other.isSetBrightness());
+    lastComparison = java.lang.Boolean.valueOf(isSetBrightness()).compareTo(other.isSetBrightness());
     if (lastComparison != 0) {
       return lastComparison;
     }
@@ -646,7 +646,7 @@ public class SensorResource implements org.apache.thrift.TBase<SensorResource, S
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetVolume()).compareTo(other.isSetVolume());
+    lastComparison = java.lang.Boolean.valueOf(isSetVolume()).compareTo(other.isSetVolume());
     if (lastComparison != 0) {
       return lastComparison;
     }
@@ -656,7 +656,7 @@ public class SensorResource implements org.apache.thrift.TBase<SensorResource, S
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetTopic()).compareTo(other.isSetTopic());
+    lastComparison = java.lang.Boolean.valueOf(isSetTopic()).compareTo(other.isSetTopic());
     if (lastComparison != 0) {
       return lastComparison;
     }
@@ -683,8 +683,8 @@ public class SensorResource implements org.apache.thrift.TBase<SensorResource, S
   }
 
   @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder("SensorResource(");
+  public java.lang.String toString() {
+    java.lang.StringBuilder sb = new java.lang.StringBuilder("SensorResource(");
     boolean first = true;
 
     sb.append("location:");
@@ -743,7 +743,7 @@ public class SensorResource implements org.apache.thrift.TBase<SensorResource, S
     }
   }
 
-  private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+  private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, java.lang.ClassNotFoundException {
     try {
       // it doesn't seem like you should have to do this, but java serialization is wacky, and doesn't call the default constructor.
       __isset_bitfield = 0;

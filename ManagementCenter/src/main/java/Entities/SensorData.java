@@ -44,6 +44,14 @@ public class SensorData {
     public int getVolume() { return volume; }
 
     /**
+     * Get-method for attribute topic
+     * @return topic as String
+     */
+    public String getTopic() { return topic; }
+
+
+
+    /**
      * SensorData Constructor initializes all six attributes for a complete dataset
      * @param location represents the sensor location and also makes a sensor uniquely identifiable
      * @param timestamp represents the exact time, when the sensor data was measured
@@ -69,6 +77,7 @@ public class SensorData {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder();
+        sb.append("[" + topic + "] ");
         sb.append("[" + location + "] ");
         sb.append(timestamp+" | ");
         sb.append("humidity: " + humidity + " % | ");

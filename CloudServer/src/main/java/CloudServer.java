@@ -34,6 +34,7 @@ public class CloudServer {
         }
         // Initializes the Log4j library with the correct appenders to display logs
         logger = Logger.getLogger(CloudServer.class);
+        logger.setLevel(Level.INFO);
         Logger.getRootLogger().setLevel(Level.WARN);
         BasicConfigurator.configure();
         serverTransport = new TServerSocket(cloudServerPort);

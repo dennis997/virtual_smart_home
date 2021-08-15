@@ -105,7 +105,6 @@ public class SmartHomeSensor {
      */
 
     public void sendData() throws InterruptedException {
-        Thread.sleep(15000);
         if (mqtt == 1) {
             while(true) {
                 // TODO: JUST FOR TESTING! DELETE AFTERWARDS!!!
@@ -145,11 +144,10 @@ public class SmartHomeSensor {
             for (int i = 0; i < amount; i++){
                 byte[] sensorData = generateSensorData();
                 MqttMessage mqttMessage = new MqttMessage(sensorData);
-                // TODO: QoS should be 1 or 2 in P5!
-                mqttMessage.setQos(0); // Quality of Service: we don`t care that we lose Packages, just like UDP.
+                mqttMessage.setQos(1);
                 mqttMessage.setRetained(true); //This flag indicates to the broker that it should retain this message until consumed by a subscriber.
                 try {
-                    pub.publish(topic, mqttMessage); //publishing the message with topic "sensor" (?)
+                    pub.publish(topic, mqttMessage);
                 }
                 catch (MqttException e){
                     e.printStackTrace();

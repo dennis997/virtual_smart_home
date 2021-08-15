@@ -16,6 +16,7 @@ public class SensorResource implements org.apache.thrift.TBase<SensorResource, S
   private static final org.apache.thrift.protocol.TField TEMP_FIELD_DESC = new org.apache.thrift.protocol.TField("temp", org.apache.thrift.protocol.TType.I32, (short)4);
   private static final org.apache.thrift.protocol.TField BRIGHTNESS_FIELD_DESC = new org.apache.thrift.protocol.TField("brightness", org.apache.thrift.protocol.TType.I32, (short)5);
   private static final org.apache.thrift.protocol.TField VOLUME_FIELD_DESC = new org.apache.thrift.protocol.TField("volume", org.apache.thrift.protocol.TType.I32, (short)6);
+  private static final org.apache.thrift.protocol.TField TOPIC_FIELD_DESC = new org.apache.thrift.protocol.TField("topic", org.apache.thrift.protocol.TType.STRING, (short)7);
 
   private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new SensorResourceStandardSchemeFactory();
   private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new SensorResourceTupleSchemeFactory();
@@ -26,6 +27,7 @@ public class SensorResource implements org.apache.thrift.TBase<SensorResource, S
   public int temp; // required
   public int brightness; // required
   public int volume; // required
+  public @org.apache.thrift.annotation.Nullable java.lang.String topic; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -34,7 +36,8 @@ public class SensorResource implements org.apache.thrift.TBase<SensorResource, S
     HUMIDITY((short)3, "humidity"),
     TEMP((short)4, "temp"),
     BRIGHTNESS((short)5, "brightness"),
-    VOLUME((short)6, "volume");
+    VOLUME((short)6, "volume"),
+    TOPIC((short)7, "topic");
 
     private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
 
@@ -62,6 +65,8 @@ public class SensorResource implements org.apache.thrift.TBase<SensorResource, S
           return BRIGHTNESS;
         case 6: // VOLUME
           return VOLUME;
+        case 7: // TOPIC
+          return TOPIC;
         default:
           return null;
       }
@@ -123,6 +128,8 @@ public class SensorResource implements org.apache.thrift.TBase<SensorResource, S
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
     tmpMap.put(_Fields.VOLUME, new org.apache.thrift.meta_data.FieldMetaData("volume", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+    tmpMap.put(_Fields.TOPIC, new org.apache.thrift.meta_data.FieldMetaData("topic", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(SensorResource.class, metaDataMap);
   }
@@ -136,7 +143,8 @@ public class SensorResource implements org.apache.thrift.TBase<SensorResource, S
     int humidity,
     int temp,
     int brightness,
-    int volume)
+    int volume,
+    java.lang.String topic)
   {
     this();
     this.location = location;
@@ -149,6 +157,7 @@ public class SensorResource implements org.apache.thrift.TBase<SensorResource, S
     setBrightnessIsSet(true);
     this.volume = volume;
     setVolumeIsSet(true);
+    this.topic = topic;
   }
 
   /**
@@ -166,6 +175,9 @@ public class SensorResource implements org.apache.thrift.TBase<SensorResource, S
     this.temp = other.temp;
     this.brightness = other.brightness;
     this.volume = other.volume;
+    if (other.isSetTopic()) {
+      this.topic = other.topic;
+    }
   }
 
   public SensorResource deepCopy() {
@@ -184,6 +196,7 @@ public class SensorResource implements org.apache.thrift.TBase<SensorResource, S
     this.brightness = 0;
     setVolumeIsSet(false);
     this.volume = 0;
+    this.topic = null;
   }
 
   @org.apache.thrift.annotation.Nullable
@@ -328,6 +341,31 @@ public class SensorResource implements org.apache.thrift.TBase<SensorResource, S
     __isset_bitfield = org.apache.thrift.EncodingUtils.setBit(__isset_bitfield, __VOLUME_ISSET_ID, value);
   }
 
+  @org.apache.thrift.annotation.Nullable
+  public java.lang.String getTopic() {
+    return this.topic;
+  }
+
+  public SensorResource setTopic(@org.apache.thrift.annotation.Nullable java.lang.String topic) {
+    this.topic = topic;
+    return this;
+  }
+
+  public void unsetTopic() {
+    this.topic = null;
+  }
+
+  /** Returns true if field topic is set (has been assigned a value) and false otherwise */
+  public boolean isSetTopic() {
+    return this.topic != null;
+  }
+
+  public void setTopicIsSet(boolean value) {
+    if (!value) {
+      this.topic = null;
+    }
+  }
+
   public void setFieldValue(_Fields field, @org.apache.thrift.annotation.Nullable java.lang.Object value) {
     switch (field) {
     case LOCATION:
@@ -378,6 +416,14 @@ public class SensorResource implements org.apache.thrift.TBase<SensorResource, S
       }
       break;
 
+    case TOPIC:
+      if (value == null) {
+        unsetTopic();
+      } else {
+        setTopic((java.lang.String)value);
+      }
+      break;
+
     }
   }
 
@@ -402,6 +448,9 @@ public class SensorResource implements org.apache.thrift.TBase<SensorResource, S
     case VOLUME:
       return getVolume();
 
+    case TOPIC:
+      return getTopic();
+
     }
     throw new java.lang.IllegalStateException();
   }
@@ -425,6 +474,8 @@ public class SensorResource implements org.apache.thrift.TBase<SensorResource, S
       return isSetBrightness();
     case VOLUME:
       return isSetVolume();
+    case TOPIC:
+      return isSetTopic();
     }
     throw new java.lang.IllegalStateException();
   }
@@ -498,6 +549,15 @@ public class SensorResource implements org.apache.thrift.TBase<SensorResource, S
         return false;
     }
 
+    boolean this_present_topic = true && this.isSetTopic();
+    boolean that_present_topic = true && that.isSetTopic();
+    if (this_present_topic || that_present_topic) {
+      if (!(this_present_topic && that_present_topic))
+        return false;
+      if (!this.topic.equals(that.topic))
+        return false;
+    }
+
     return true;
   }
 
@@ -520,6 +580,10 @@ public class SensorResource implements org.apache.thrift.TBase<SensorResource, S
     hashCode = hashCode * 8191 + brightness;
 
     hashCode = hashCode * 8191 + volume;
+
+    hashCode = hashCode * 8191 + ((isSetTopic()) ? 131071 : 524287);
+    if (isSetTopic())
+      hashCode = hashCode * 8191 + topic.hashCode();
 
     return hashCode;
   }
@@ -592,6 +656,16 @@ public class SensorResource implements org.apache.thrift.TBase<SensorResource, S
         return lastComparison;
       }
     }
+    lastComparison = java.lang.Boolean.valueOf(isSetTopic()).compareTo(other.isSetTopic());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetTopic()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.topic, other.topic);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -643,6 +717,14 @@ public class SensorResource implements org.apache.thrift.TBase<SensorResource, S
     if (!first) sb.append(", ");
     sb.append("volume:");
     sb.append(this.volume);
+    first = false;
+    if (!first) sb.append(", ");
+    sb.append("topic:");
+    if (this.topic == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.topic);
+    }
     first = false;
     sb.append(")");
     return sb.toString();
@@ -737,6 +819,14 @@ public class SensorResource implements org.apache.thrift.TBase<SensorResource, S
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 7: // TOPIC
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.topic = iprot.readString();
+              struct.setTopicIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -774,6 +864,11 @@ public class SensorResource implements org.apache.thrift.TBase<SensorResource, S
       oprot.writeFieldBegin(VOLUME_FIELD_DESC);
       oprot.writeI32(struct.volume);
       oprot.writeFieldEnd();
+      if (struct.topic != null) {
+        oprot.writeFieldBegin(TOPIC_FIELD_DESC);
+        oprot.writeString(struct.topic);
+        oprot.writeFieldEnd();
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -810,7 +905,10 @@ public class SensorResource implements org.apache.thrift.TBase<SensorResource, S
       if (struct.isSetVolume()) {
         optionals.set(5);
       }
-      oprot.writeBitSet(optionals, 6);
+      if (struct.isSetTopic()) {
+        optionals.set(6);
+      }
+      oprot.writeBitSet(optionals, 7);
       if (struct.isSetLocation()) {
         oprot.writeString(struct.location);
       }
@@ -829,12 +927,15 @@ public class SensorResource implements org.apache.thrift.TBase<SensorResource, S
       if (struct.isSetVolume()) {
         oprot.writeI32(struct.volume);
       }
+      if (struct.isSetTopic()) {
+        oprot.writeString(struct.topic);
+      }
     }
 
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, SensorResource struct) throws org.apache.thrift.TException {
       org.apache.thrift.protocol.TTupleProtocol iprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
-      java.util.BitSet incoming = iprot.readBitSet(6);
+      java.util.BitSet incoming = iprot.readBitSet(7);
       if (incoming.get(0)) {
         struct.location = iprot.readString();
         struct.setLocationIsSet(true);
@@ -858,6 +959,10 @@ public class SensorResource implements org.apache.thrift.TBase<SensorResource, S
       if (incoming.get(5)) {
         struct.volume = iprot.readI32();
         struct.setVolumeIsSet(true);
+      }
+      if (incoming.get(6)) {
+        struct.topic = iprot.readString();
+        struct.setTopicIsSet(true);
       }
     }
   }

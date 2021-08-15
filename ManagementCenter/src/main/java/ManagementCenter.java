@@ -1,9 +1,7 @@
 import SensorProcessor.MQTTReceiver;
 import CloudConnection.CloudConnector;
-import Entities.SensorData;
 import WebServer.HTTPServer;
 import SensorProcessor.UDPReceiver;
-import org.apache.thrift.transport.TTransportException;
 
 /**
  * The ManagementCenter is the core component, managing the three services HTTPServer, UDPReceiver and Cloudconnector (the

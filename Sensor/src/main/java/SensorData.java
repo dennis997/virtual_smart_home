@@ -3,10 +3,10 @@
  * in range of the specific sensor location.
  */
 public class SensorData {
-    private String topic;
     private String location;
     private String timestamp;
     private int humidity, temp, brightness, volume;
+    private String topic;
 
     /**
      * Get-method for attribute location
@@ -15,6 +15,39 @@ public class SensorData {
     public String getLocation() {
         return location;
     }
+    /**
+     * Get-method for attribute timestamp
+     * @return timestamp as String
+     */
+    public String getTimestamp() { return timestamp; }
+    /**
+     * Get-method for attribute humidity
+     * @return humidity as Integer
+     */
+    public int getHumidity() { return humidity; }
+    /**
+     * Get-method for attribute temp
+     * @return temp as Integer
+     */
+    public int getTemp() { return temp; }
+    /**
+     * Get-method for attribute brightness
+     * @return brightness as Integer
+     */
+    public int getBrightness() { return brightness; }
+    /**
+     * Get-method for attribute volume
+     * @return volume as Integer
+     */
+    public int getVolume() { return volume; }
+
+    /**
+     * Get-method for attribute topic
+     * @return topic as String
+     */
+    public String getTopic() { return topic; }
+
+
 
     /**
      * SensorData Constructor initializes all six attributes for a complete dataset
@@ -42,6 +75,7 @@ public class SensorData {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder();
+        sb.append("[" + topic + "] ");
         sb.append("[" + location + "] ");
         sb.append(timestamp+" | ");
         sb.append("humidity: " + humidity + " % | ");
