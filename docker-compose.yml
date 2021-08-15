@@ -1,322 +1,288 @@
 version: "3.7"
 
 services:
-    # loadbalancer
-    NGINX:
-        container_name: "nginx"
-        image: "nginx"
-        build:
-            context: ./
-            dockerfile: nginx_dockerfile
-        ports:
-            - "8082:80"
-        depends_on:
-            - CLOUDSERVER1
-            - CLOUDSERVER2
-            - CLOUDSERVER3
+  # loadbalancer
+  nginx:
+    container_name: "nginx"
+    image: "nginx"
+    build:
+      context: ./
+      dockerfile: nginx_dockerfile
+    ports:
+      - "8082:80"
+    depends_on:
+      - cloudserver1
+  
+  #---------------------SmartHome_Environment_1--------------------------#
+  managementcenter1:
+    image: "centerimage:latest"
+    container_name: "managementcenter1"
+    restart: always
+    build:
+      context: ./ManagementCenter
+      dockerfile: Dockerfile
+    environment:
+      - SENSOR_RECEIVER_PORT=5001
+      - HTTP_SERVER_PORT=7001
+      - MQTT=1
+      - TOPIC=mc1
+      - BROKER=mosquitto
+      - BROKER_PORT=1883
+      - THRIFT_SERVER_PORT=9002
+      - SERVER_NAME=nginx
+    ports:
+      - "7001:7001"
+    depends_on:
+      - nginx
 
-#---------------------SmartHome_Environment_1--------------------------#
-    MANAGEMENTCENTER1:
-        image: "centerimage:latest"
-        container_name: "managementcenter1"
-        restart: always
-        build:
-              context: ./ManagementCenter
-              dockerfile: Dockerfile
-        environment:
-            - SENSOR_RECEIVER_PORT=5001
-            - HTTP_SERVER_PORT=7001
-            - MQTT=1
-            - TOPIC=mc1
-            - BROKER=mosquitto
-            - BROKER_PORT=1883
-            - THRIFT_SERVER_PORT=9002
-            - SERVER_NAME=nginx
-        ports:
-            - "7001:7001"
-        depends_on:
-            - NGINX
+  sensor1_1:
+    image: "sensorimage:latest"
+    restart: always
+    container_name: "sensor1_1"
+    build:
+      context: ./Sensor
+      dockerfile: Dockerfile
+    environment:
+      - IP=managementcenter1
+      - PORT=5001
+      - LOCATION=bathroom
+      - SLEEPTIMER=5000
+      - MQTT=1
+      - BROKER=mosquitto
+      - BROKER_PORT=1883
+    depends_on:
+      - managementcenter1
 
-    SENSOR1_1:
-        image: "sensorimage:latest"
-        restart: always
-        container_name: "sensor1_1"
-        build:
-              context: ./Sensor
-              dockerfile: Dockerfile
-        environment:
-            - IP=managementcenter1
-            - PORT=5001
-            - LOCATION=bathroom
-            - SLEEPTIMER=5000
-            - MQTT=1
-            - BROKER=mosquitto
-            - BROKER_PORT=1883
-        depends_on:
-            - MANAGEMENTCENTER1
+  sensor1_2:
+    image: "sensorimage:latest"
+    restart: always
+    container_name: "sensor1_2"
+    build:
+      context: ./Sensor
+    environment:
+      - IP=managementcenter1
+      - PORT=5001
+      - LOCATION=kitchen
+      - SLEEPTIMER=4000
+      - MQTT=1
+      - BROKER=mosquitto
+      - BROKER_PORT=1883
+    depends_on:
+      - managementcenter1
 
-    SENSOR1_2:
-        image: "sensorimage:latest"
-        restart: always
-        container_name: "sensor1_2"
-        build:
-              context: ./Sensor
-        environment:
-            - IP=managementcenter1
-            - PORT=5001
-            - LOCATION=kitchen
-            - SLEEPTIMER=4000
-            - MQTT=1
-            - BROKER=mosquitto
-            - BROKER_PORT=1883
-        depends_on:
-            - MANAGEMENTCENTER1
+  sensor1_3:
+    image: "sensorimage:latest"
+    restart: always
+    container_name: "sensor1_3"
+    build:
+      context: ./Sensor
+    environment:
+      - IP=managementcenter1
+      - PORT=5001
+      - LOCATION=garden
+      - SLEEPTIMER=6000
+      - MQTT=1
+      - BROKER=mosquitto
+      - BROKER_PORT=1883
+    depends_on:
+      - managementcenter1
 
-    SENSOR1_3:
-        image: "sensorimage:latest"
-        restart: always
-        container_name: "sensor1_3"
-        build:
-              context: ./Sensor
-        environment:
-            - IP=managementcenter1
-            - PORT=5001
-            - LOCATION=garden
-            - SLEEPTIMER=6000
-            - MQTT=1
-            - BROKER=mosquitto
-            - BROKER_PORT=1883
-        depends_on:
-            - MANAGEMENTCENTER1
+  sensor1_4:
+    image: "sensorimage:latest"
+    restart: always
+    container_name: "sensor1_4"
+    build:
+      context: ./Sensor
+    environment:
+      - IP=managementcenter1
+      - PORT=5001
+      - LOCATION=bedroom
+      - SLEEPTIMER=10000
+      - MQTT=1
+      - BROKER=mosquitto
+      - BROKER_PORT=1883
+    depends_on:
+      - managementcenter1
 
-    SENSOR1_4:
-        image: "sensorimage:latest"
-        restart: always
-        container_name: "sensor1_4"
-        build:
-              context: ./Sensor
-        environment:
-            - IP=managementcenter1
-            - PORT=5001
-            - LOCATION=bedroom
-            - SLEEPTIMER=10000
-            - MQTT=1
-            - BROKER=mosquitto
-            - BROKER_PORT=1883
-        depends_on:
-            - MANAGEMENTCENTER1
+  #---------------------SmartHome_Environment_2--------------------------#
+  managementcenter2:
+    image: "centerimage:latest"
+    container_name: "managementcenter2"
+    restart: always
+    build:
+      context: ./ManagementCenter
+      dockerfile: Dockerfile
+    environment:
+      - SENSOR_RECEIVER_PORT=5002
+      - HTTP_SERVER_PORT=7002
+      - MQTT=1
+      - TOPIC=mc2
+      - BROKER=mosquitto
+      - BROKER_PORT=1883
+      - THRIFT_SERVER_PORT=9002
+      - SERVER_NAME=nginx
+    ports:
+      - "7002:7002"
+    depends_on:
+      - nginx
 
-#---------------------SmartHome_Environment_2--------------------------#
-    MANAGEMENTCENTER2:
-        image: "centerimage:latest"
-        container_name: "managementcenter2"
-        restart: always
-        build:
-              context: ./ManagementCenter
-              dockerfile: Dockerfile
-        environment:
-            - SENSOR_RECEIVER_PORT=5002
-            - HTTP_SERVER_PORT=7002
-            - MQTT=1
-            - TOPIC=mc2
-            - BROKER=mosquitto
-            - BROKER_PORT=1883
-            - THRIFT_SERVER_PORT=9002
-            - SERVER_NAME=nginx
-        ports:
-            - "7002:7002"
-        depends_on:
-            - NGINX
+  sensor2_1:
+    image: "sensorimage:latest"
+    restart: always
+    container_name: "sensor2_1"
+    build:
+      context: ./Sensor
+      dockerfile: Dockerfile
+    environment:
+      - IP=managementcenter2
+      - PORT=5002
+      - LOCATION=bathroom
+      - SLEEPTIMER=5000
+      - MQTT=1
+      - BROKER=mosquitto
+      - BROKER_PORT=1883
+    depends_on:
+      - managementcenter2
 
-    SENSOR2_1:
-        image: "sensorimage:latest"
-        restart: always
-        container_name: "sensor2_1"
-        build:
-              context: ./Sensor
-              dockerfile: Dockerfile
-        environment:
-            - IP=managementcenter2
-            - PORT=5002
-            - LOCATION=bathroom
-            - SLEEPTIMER=5000
-            - MQTT=1
-            - BROKER=mosquitto
-            - BROKER_PORT=1883
-        depends_on:
-            - MANAGEMENTCENTER2
+  sensor2_2:
+    image: "sensorimage:latest"
+    restart: always
+    container_name: "sensor2_2"
+    build:
+      context: ./Sensor
+    environment:
+      - IP=managementcenter2
+      - PORT=5002
+      - LOCATION=kitchen
+      - SLEEPTIMER=4000
+      - MQTT=1
+      - BROKER=mosquitto
+      - BROKER_PORT=1883
+    depends_on:
+      - managementcenter2
 
-    SENSOR2_2:
-        image: "sensorimage:latest"
-        restart: always
-        container_name: "sensor2_2"
-        build:
-              context: ./Sensor
-        environment:
-            - IP=managementcenter2
-            - PORT=5002
-            - LOCATION=kitchen
-            - SLEEPTIMER=4000
-            - MQTT=1
-            - BROKER=mosquitto
-            - BROKER_PORT=1883
-        depends_on:
-            - MANAGEMENTCENTER2
+  sensor2_3:
+    image: "sensorimage:latest"
+    restart: always
+    container_name: "sensor2_3"
+    build:
+      context: ./Sensor
+    environment:
+      - IP=managementcenter2
+      - PORT=5002
+      - LOCATION=garden
+      - SLEEPTIMER=6000
+      - MQTT=1
+      - BROKER=mosquitto
+      - BROKER_PORT=1883
+    depends_on:
+      - managementcenter2
 
-    SENSOR2_3:
-        image: "sensorimage:latest"
-        restart: always
-        container_name: "sensor2_3"
-        build:
-              context: ./Sensor
-        environment:
-            - IP=managementcenter2
-            - PORT=5002
-            - LOCATION=garden
-            - SLEEPTIMER=6000
-            - MQTT=1
-            - BROKER=mosquitto
-            - BROKER_PORT=1883
-        depends_on:
-            - MANAGEMENTCENTER2
+  sensor2_4:
+    image: "sensorimage:latest"
+    restart: always
+    container_name: "sensor2_4"
+    build:
+      context: ./Sensor
+    environment:
+      - IP=managementcenter2
+      - PORT=5002
+      - LOCATION=bedroom
+      - SLEEPTIMER=10000
+      - MQTT=1
+      - BROKER=mosquitto
+      - BROKER_PORT=1883
+    depends_on:
+      - managementcenter2
 
-    SENSOR2_4:
-        image: "sensorimage:latest"
-        restart: always
-        container_name: "sensor2_4"
-        build:
-              context: ./Sensor
-        environment:
-            - IP=managementcenter2
-            - PORT=5002
-            - LOCATION=bedroom
-            - SLEEPTIMER=10000
-            - MQTT=1
-            - BROKER=mosquitto
-            - BROKER_PORT=1883
-        depends_on:
-            - MANAGEMENTCENTER2
+  #---------------------MQTT_Broker--------------------------#
 
-#---------------------MQTT_Broker--------------------------#
+  mosquitto:
+    image: eclipse-mosquitto:2.0.11
+    restart: always
+    container_name: "mosquitto"
+    command: mosquitto -c /mosquitto-no-auth.conf
+    depends_on:
+      - mongo1
 
-    MOSQUITTO:
-        image: eclipse-mosquitto:2.0.11
-        restart: always
-        container_name: "mosquitto"
-        command: mosquitto -c /mosquitto-no-auth.conf
-        depends_on:
-            - MONGO1
+  #---------------------Cloud_Environment--------------------------#
 
-#---------------------Cloud_Environment--------------------------#
-    
-    #---------Thrift/Cloudserver----------#
-    CLOUDSERVER1:
-        image: "cloudserverimage:latest"
-        restart: always
-        container_name: "cloudserver1"
-        build:
-            context: ./CloudServer
-            dockerfile: Dockerfile
-        environment:
-           - DB_SERVER_NAME=mongo1
-           - DB_SERVER_PORT=27017
-           - THRIFT_SERVER_PORT=9002
-        depends_on:
-            - MOSQUITTO
+  #---------Thrift/Cloudserver----------#
+  cloudserver1:
+    image: "cloudserverimage:latest"
+    restart: always
+    container_name: "cloudserver1"
+    build:
+      context: ./CloudServer
+      dockerfile: Dockerfile
+    environment:
+      - DB_SERVER_NAME=mongo1
+      - DB_SERVER_PORT=27017
+      - THRIFT_SERVER_PORT=9002
+    depends_on:
+      - mosquitto
 
-    CLOUDSERVER2:
-        image: "cloudserverimage:latest"
-        restart: always
-        container_name: "cloudserver2"
-        build:
-            context: ./CloudServer
-            dockerfile: Dockerfile
-        environment:
-           - DB_SERVER_NAME=mongo2
-           - DB_SERVER_PORT=27017
-           - THRIFT_SERVER_PORT=9002
-        depends_on:
-            - MOSQUITTO
+  #---------DB_Cluster_Setup----------#
+  clustersetup:
+    image: mongo:3.6-jessie
+    depends_on:
+      - mongo1
+      - mongo2
+      - mongo3
+    volumes:
+      - .:/scripts
+    restart: "no"
+    entrypoint: [ "bash", "/scripts/db_cluster_setup.sh" ]
 
-    CLOUDSERVER3:
-        image: "cloudserverimage:latest"
-        restart: always
-        container_name: "cloudserver3"
-        build:
-            context: ./CloudServer
-            dockerfile: Dockerfile
-        environment:
-           - DB_SERVER_NAME=mongo3
-           - DB_SERVER_PORT=27017
-           - THRIFT_SERVER_PORT=9002
-        depends_on:
-            - MOSQUITTO
+  #---------DB_Instances----------#
+  mongo1:
+    image: mongo
+    restart: always
+    container_name: "mongo1"
+    logging:
+      driver: none
+    volumes:
+      - mongo1:/data/db
+    entrypoint: ["/usr/bin/mongod", "--bind_ip_all", "--replSet", "replicaset"]
 
-    #---------DB_Cluster_Setup----------#
-    CLUSTERSETUP:
-        image: mongo:3.6-jessie
-        links:
-            - MONGO1:MONGO1
-            - MONGO2:MONGO1
-            - MONGO3:MONGO1
-        depends_on:
-            - MONGO1
-            - MONGO2
-            - MONGO3
-        volumes:
-            - .:/scripts
-        restart: "no"
-        entrypoint: [ "bash", "/scripts/db_cluster_setup.sh" ]
+  mongo2:
+    image: mongo
+    restart: always
+    container_name: "mongo2"
+    logging:
+      driver: none
+    volumes:
+      - mongo2:/data/db
+    entrypoint: ["/usr/bin/mongod", "--bind_ip_all", "--replSet", "replicaset"]
 
-    #---------DB_Instances----------#
-    MONGO1:
-        image: mongo
-        restart: always
-        container_name: "mongo1"
-        logging:
-            driver: syslog
-        volumes:
-            - mongo1:/data/db
-        entrypoint: ["/usr/bin/mongod", "--bind_ip_all", "--replSet", "replicaset"]
+  mongo3:
+    image: mongo
+    restart: always
+    container_name: "mongo3"
+    logging:
+      driver: none
+    volumes:
+      - mongo3:/data/db
+    entrypoint: ["/usr/bin/mongod", "--bind_ip_all", "--replSet", "replicaset"]
 
-    MONGO2:
-        image: mongo
-        restart: always
-        container_name: "mongo2"
-        logging:
-            driver: syslog
-        volumes:
-            - mongo2:/data/db
-        entrypoint: ["/usr/bin/mongod", "--bind_ip_all", "--replSet", "replicaset"]
-
-    MONGO3:
-        image: mongo
-        restart: always
-        container_name: "mongo3"
-        logging:
-            driver: syslog
-        volumes:
-            - mongo3:/data/db
-        entrypoint: ["/usr/bin/mongod", "--bind_ip_all", "--replSet", "replicaset"]
-
-    #---------WebGUI_DB_Administration----------#
-    MONGO-EXPRESS:
-        image: mongo-express
-        restart: always
-        ports:
-            - "8081:8081"
-        links:
-            - MONGO1
-        logging:
-            driver: none
-        environment:
-            ME_CONFIG_MONGODB_ADMINUSERNAME: root
-            ME_CONFIG_MONGODB_ADMINPASSWORD: example
-            ME_CONFIG_MONGODB_URL: mongodb://mongo1:27017
-        depends_on:
-            -   CLUSTERSETUP
+  #---------WebGUI_DB_Administration----------#
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - "8081:8081"
+    links:
+      - mongo1
+    logging:
+      driver: none
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: example
+      ME_CONFIG_MONGODB_URL: mongodb://mongo1:27017
+    depends_on:
+      -   clustersetup
 
 volumes:
-    mongo1:
-    mongo2:
-    mongo3:
+  mongo1:
+  mongo2:
+  mongo3:

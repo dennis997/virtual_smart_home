@@ -10,7 +10,7 @@ mongo --host mongo1:27017 <<EOF
       {
         "_id": 0,
         "host": "mongo1:27017",
-        "priority": 2
+        "priority": 1000
       },
       {
         "_id": 1,
