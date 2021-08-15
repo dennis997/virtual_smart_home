@@ -21,6 +21,7 @@ public class ManagementCenter {
     private int mqttBrokerPort;
     private String mqttBrokerName;
     private CloudConnector cloudConnector;
+    private String topic;
 
     /**
      * Constructor obtains environment variables provided by docker-compose.yml to initialize the UDPReceiver,
@@ -41,6 +42,7 @@ public class ManagementCenter {
                 mqttBrokerName = System.getenv("BROKER");
                 thriftServerPort = Integer.parseInt(System.getenv("THRIFT_SERVER_PORT"));
                 serverName = System.getenv("SERVER_NAME");
+                topic = System.getenv("TOPIC");
 
 
             } else { //start in IDE
@@ -52,6 +54,7 @@ public class ManagementCenter {
                 MQTT = 0; //UDP or MQTT?
                 httpServerPort = 7001;
                 thriftServerPort = 9002;
+                topic = "DEFAULT-TOPIC";
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -62,13 +65,13 @@ public class ManagementCenter {
 
         if (MQTT==1){
             System.out.println("MQTT chosen");
-            this.mqttReceiver = new MQTTReceiver(mqttBrokerName, mqttBrokerPort, cloudConnector);
+            this.mqttReceiver = new MQTTReceiver(mqttBrokerName, mqttBrokerPort, cloudConnector, topic);
             this.httpServer = new HTTPServer(mqttReceiver, httpServerPort);
 
         }
         else{
             System.out.println("UDP chosen");
-            this.udpReceiver = new UDPReceiver(sensorSocketPort, cloudConnector);
+            this.udpReceiver = new UDPReceiver(sensorSocketPort, cloudConnector, topic);
             this.httpServer = new HTTPServer(udpReceiver, httpServerPort);
         }
     }

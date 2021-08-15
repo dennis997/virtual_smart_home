@@ -92,7 +92,8 @@ public class SmartHomeSensor {
                 getRandomNumber(30,99),
                 getRandomNumber(17,30),
                 getRandomNumber(0,100),
-                getRandomNumber(35,95)
+                getRandomNumber(35,95),
+                topic
         );
         Gson gson = new Gson();
         return gson.toJson(sensorData).getBytes();
@@ -148,7 +149,7 @@ public class SmartHomeSensor {
                 mqttMessage.setQos(0); // Quality of Service: we don`t care that we lose Packages, just like UDP.
                 mqttMessage.setRetained(true); //This flag indicates to the broker that it should retain this message until consumed by a subscriber.
                 try {
-                    pub.publish("sensor", mqttMessage); //publishing the message with topic "sensor" (?)
+                    pub.publish(topic, mqttMessage); //publishing the message with topic "sensor" (?)
                 }
                 catch (MqttException e){
                     e.printStackTrace();

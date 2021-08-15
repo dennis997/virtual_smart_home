@@ -18,7 +18,7 @@ public class CloudConnectorTest {
         long sum = 0;
         for (int i = 0; i < 20; i++) {
             long startTime = System.currentTimeMillis();
-            cloudConnector.sendSensorData(new SensorData("Testlocation", "TestTimestamp", 0, 0, 0, 0));
+            cloudConnector.sendSensorData(new SensorData("Testlocation", "TestTimestamp", 0, 0, 0, 0, "testTopic"));
             long time = System.currentTimeMillis() - startTime;
             System.out.println("Finished Round: " + (i+1) + " ("+time+"ms)");
             sum += time;

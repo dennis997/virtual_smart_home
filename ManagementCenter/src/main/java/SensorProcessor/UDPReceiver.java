@@ -18,16 +18,18 @@ public class UDPReceiver {
     private static ArrayList<SensorData> sensorData;
     private static CloudConnector cloudConnector;
     private static Logger logger;
+    private static String topic;
 
     /**
      * Constructor creates the datastructure to save the sensorData and initializes a new UDP Socket
      * @param serverSocketPort is the UDP Port to listen for incoming SensorData
      * @throws SocketException
      */
-    public UDPReceiver(int serverSocketPort, CloudConnector cloudConnector) throws SocketException{
+    public UDPReceiver(int serverSocketPort, CloudConnector cloudConnector, String topic) throws SocketException{
         this.serverSocket = new DatagramSocket(serverSocketPort);
         this.sensorData = new ArrayList<SensorData>();
         this.cloudConnector = cloudConnector;
+        this.topic = topic;
         logger = Logger.getLogger(UDPReceiver.class);
         BasicConfigurator.configure();
     }
@@ -58,8 +60,9 @@ public class UDPReceiver {
         int temp = (int) jsonSensorData.get("temp");
         int brightness = (int) jsonSensorData.get("brightness");
         int volume = (int) jsonSensorData.get("volume");
+        String topic = (String) jsonSensorData.get("topic");
 
-        SensorData sensorDataObject = new SensorData(location, timestamp, humidity, temp, brightness, volume);
+        SensorData sensorDataObject = new SensorData(location, timestamp, humidity, temp, brightness, volume, topic);
         return sensorDataObject;
     }
 

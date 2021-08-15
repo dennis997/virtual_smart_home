@@ -20,11 +20,11 @@ public class MQTTReceiver implements MqttCallback{
     private static Logger logger;
 
 //+broker
-    public MQTTReceiver(String mqttBrokerName, int mqttBrokerPort, CloudConnector cloudConnector) throws MqttException {
+    public MQTTReceiver(String mqttBrokerName, int mqttBrokerPort, CloudConnector cloudConnector, String topic) throws MqttException {
         this.sensorData = new ArrayList<SensorData>();
         this.mqttClient = new MqttClient("tcp://"+mqttBrokerName+":"+mqttBrokerPort,uuid.toString());
         this.cloudConnector = cloudConnector;
-
+        this.topic = topic;
         if ( //start in Docker
                 (System.getenv("TOPIC") != null))
         {
@@ -42,15 +42,15 @@ public class MQTTReceiver implements MqttCallback{
 
     private SensorData parseReceivedData(String sensorDataString) {
         JSONObject jsonSensorData = new JSONObject(sensorDataString);
-
         String location = (String) jsonSensorData.get("location");
         String timestamp = (String) jsonSensorData.get("timestamp");
         int humidity = (int) jsonSensorData.get("humidity");
         int temp = (int) jsonSensorData.get("temp");
         int brightness = (int) jsonSensorData.get("brightness");
         int volume = (int) jsonSensorData.get("volume");
+        String topic = (String) jsonSensorData.get("topic");
 
-        SensorData sensorDataObject = new SensorData(location, timestamp, humidity, temp, brightness, volume);
+        SensorData sensorDataObject = new SensorData(location, timestamp, humidity, temp, brightness, volume, topic);
         System.out.println(sensorDataObject);
         return sensorDataObject;
     }

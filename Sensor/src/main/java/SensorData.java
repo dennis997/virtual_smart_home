@@ -3,6 +3,7 @@
  * in range of the specific sensor location.
  */
 public class SensorData {
+    private String topic;
     private String location;
     private String timestamp;
     private int humidity, temp, brightness, volume;
@@ -24,13 +25,14 @@ public class SensorData {
      * @param brightness is measured in %
      * @param volume is measured in dB
      */
-    public SensorData(String location, String timestamp, int humidity, int temp, int brightness, int volume) {
+    public SensorData(String location, String timestamp, int humidity, int temp, int brightness, int volume, String topic) {
         this.location = location;
         this.timestamp = timestamp;
         this.humidity = humidity;
         this.temp = temp;
         this.brightness = brightness;
         this.volume = volume;
+        this.topic = topic;
     }
 
     /**
@@ -46,6 +48,7 @@ public class SensorData {
         sb.append("temp: " + temp + " C | ");
         sb.append("brightness: " + brightness + " % | ");
         sb.append("volume: " + volume + " dB | ");
+        sb.append("[" + topic + "] ");
         return sb.toString();
     }
 }
