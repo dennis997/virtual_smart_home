@@ -11,7 +11,7 @@ import java.net.DatagramPacket;
 import java.util.ArrayList;
 import java.util.UUID;
 
-public class MQTTReceiver implements MqttCallback{
+public class MQTTReceiver implements MqttCallbackExtended{
     private static ArrayList<SensorData> sensorData;
     private static UUID uuid = UUID.randomUUID();
     private static MqttClient mqttClient;
@@ -77,7 +77,12 @@ public class MQTTReceiver implements MqttCallback{
      */
     @Override
     public void connectionLost(Throwable throwable) {
-        logger.error("Lost connection to MQTT broker!");
+        logger.error("Subscriber lost connection to MQTT broker, trying to reconnect...");
+        try {
+            this.mqttClient.connect();
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
     }
     /*
     This method is called when a message arrives from the server.
@@ -112,6 +117,20 @@ public class MQTTReceiver implements MqttCallback{
         } catch (MqttException e) {
             logger.error("Failed to get delivery token message: " + e.getMessage());
         }
+    }
+
+    @Override
+    public void connectComplete(boolean reconnect, String serverURI) {
+
+        try {
+            //Very important to resubcribe to the topic after the connection was (re-)estabslished.
+            //Otherwise you are reconnected but you don't get any message
+            this.mqttClient.subscribe(this.topic);
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
+
+
     }
 }
 

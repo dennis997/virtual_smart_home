@@ -133,7 +133,7 @@ public class SmartHomeSensor {
                     publisher.publish(topic, mqttMessage); // Publishing the message with the corresponding topic
                 }
                 catch (MqttException e){
-                    e.printStackTrace();
+                    logger.error("publisher lost connection to broker, trying to reconnect...");
                 }
                 Thread.sleep(sleeptimer);
             }
