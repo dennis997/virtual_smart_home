@@ -21,11 +21,11 @@ public class SmartHomeSensor {
     private static DatagramSocket clientSocket;
     private static int sleeptimer;
     private static int mqtt;
-    private static IMqttClient pub;
     private static String broker;
     private static int brokerPort;
     private static Logger logger;
     private static String topic;
+    private IMqttClient publisher;
     /**
      *
      * @param ip of ManagementCenter within the internal docker network
@@ -60,18 +60,34 @@ public class SmartHomeSensor {
                 broker = "localhost";
                 brokerPort = 1883;
             }
-            IMqttClient publisher = new MqttClient("tcp://"+broker+":"+brokerPort,uuid.toString());
-            //The code used to establish a connection to the server typically looks like this:
-            MqttConnectOptions options = new MqttConnectOptions();
-            options.setAutomaticReconnect(true); //auto-reconnect after failure
-            options.setCleanSession(true); //unsent messages from previous session will be discarded
-            options.setConnectionTimeout(10); //connection timeout at 10 seconds
-            logger.info("Connecting to MQTT broker...");
-            publisher.connect(options);
-            logger.info("Connected to MQTT broker!");
-            pub = publisher;
+            connectMqttBroker();
         }
     }
+
+    /**
+     * Handles connect to MQTTBroker
+     * @return status whether connection was successfully established
+     */
+    public Boolean connectMqttBroker() throws MqttException {
+
+        publisher = new MqttClient("tcp://"+broker+":"+brokerPort,uuid.toString());
+        //The code used to establish a connection to the server typically looks like this:
+        MqttConnectOptions options = new MqttConnectOptions();
+        options.setAutomaticReconnect(true); //auto-reconnect after failure
+        options.setCleanSession(true); //unsent messages from previous session will be discarded
+        options.setConnectionTimeout(10); //connection timeout at 10 seconds
+        logger.info("Connecting to MQTT broker...");
+        try {
+            publisher.connect(options);
+        } catch (MqttException me) {
+            logger.error("Cannot connect to MQTT broker!");
+            return false;
+        }
+        logger.info("Connected to MQTT broker!");
+        return true;
+    }
+
+
     /**
      *
      * @param min range limit of random generated data
@@ -114,7 +130,7 @@ public class SmartHomeSensor {
                 mqttMessage.setQos(0); // Quality of Service: we don`t care that we lose Packages, just like UDP.
                 mqttMessage.setRetained(true); // This flag indicates to the broker that it should retain this message until consumed by a subscriber.
                 try {
-                    pub.publish(topic, mqttMessage); // Publishing the message with the corresponding topic
+                    publisher.publish(topic, mqttMessage); // Publishing the message with the corresponding topic
                 }
                 catch (MqttException e){
                     e.printStackTrace();
@@ -147,10 +163,10 @@ public class SmartHomeSensor {
                 mqttMessage.setQos(1);
                 mqttMessage.setRetained(true); //This flag indicates to the broker that it should retain this message until consumed by a subscriber.
                 try {
-                    pub.publish(topic, mqttMessage);
+                    publisher.publish(topic, mqttMessage);
                 }
                 catch (MqttException e){
-                    e.printStackTrace();
+                    logger.error("Lost connection to MQTT-Broker!");
                 }
             }
         } else {

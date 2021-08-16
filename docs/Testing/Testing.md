@@ -36,3 +36,24 @@
 UDP            |  MQTT
 :-------------------------:|:-------------------------:
 ![](./udp_avg_run.png)  |  ![](mqtt_avg_run.png)
+
+## <u>Practical 5</u>
+### Functional Tests
+- NGINX Loadbalancer passes requests from ManagementCenters to Cloudservers (Round Robin) probes server for connectivity in background [PASSED]
+- Sensordata is being persisted by multiple Cloudservers [PASSED]
+- DB-Cluster is replicating data onto its replicaset members [PASSED]
+
+### Performance Tests
+#### Failure Tests
+- Managementcenters can fail and are reconnecting with RPC automatically [PASSED]
+- Cloudservers can fail and sensordata is being sent to the next available cloudserver [PASSED]
+- If all cloudservers are in failstate. Sensordata is being retained by the mcs and sent out after a reconnect [PASSED]
+
+#### Protocol for checking db consistency
+- localhost:8085 for mongoexpress check database entries respecively collections
+- checking data replication of replicaset members via mongoclient connect:
+  - <b>mongo --host localhost:[10001-10003]</b> (10002 & 10003 = SECONDARY)
+  - use SmartHome
+  - <b>rs.slaveOk()</b> (Telling replicaset, that we are reading from secondary members)
+  - <b>db.SmartHome.count()</b> (Comparing dataset counts of all replicaset members)
+
