@@ -120,7 +120,7 @@ public class SmartHomeSensor {
      * @throws InterruptedException
      */
 
-    public void sendData() throws InterruptedException {
+    public void sendData() throws InterruptedException, MqttException {
         if (mqtt == 1) {
             while(true) {
                 // TODO: JUST FOR TESTING! DELETE AFTERWARDS!!!
@@ -133,7 +133,9 @@ public class SmartHomeSensor {
                     publisher.publish(topic, mqttMessage); // Publishing the message with the corresponding topic
                 }
                 catch (MqttException e){
-                    logger.error("publisher lost connection to broker, trying to reconnect...");
+                    logger.info("Sensor lost connection to broker, trying to reconnect...");
+                    Thread.sleep(5000);
+                    sendData();
                 }
                 Thread.sleep(sleeptimer);
             }
@@ -167,6 +169,7 @@ public class SmartHomeSensor {
                 }
                 catch (MqttException e){
                     logger.error("Lost connection to MQTT-Broker!");
+
                 }
             }
         } else {

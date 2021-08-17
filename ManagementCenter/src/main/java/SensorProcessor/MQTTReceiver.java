@@ -11,7 +11,7 @@ import java.net.DatagramPacket;
 import java.util.ArrayList;
 import java.util.UUID;
 
-public class MQTTReceiver implements MqttCallbackExtended{
+public class MQTTReceiver implements MqttCallbackExtended {
     private static ArrayList<SensorData> sensorData;
     private static UUID uuid = UUID.randomUUID();
     private static MqttClient mqttClient;
@@ -19,15 +19,14 @@ public class MQTTReceiver implements MqttCallbackExtended{
     private static CloudConnector cloudConnector;
     private static Logger logger;
 
-//+broker
+    //+broker
     public MQTTReceiver(String mqttBrokerName, int mqttBrokerPort, CloudConnector cloudConnector, String topic) throws MqttException {
         this.sensorData = new ArrayList<SensorData>();
-        this.mqttClient = new MqttClient("tcp://"+mqttBrokerName+":"+mqttBrokerPort,uuid.toString());
+        this.mqttClient = new MqttClient("tcp://" + mqttBrokerName + ":" + mqttBrokerPort, uuid.toString());
         this.cloudConnector = cloudConnector;
         this.topic = topic;
         if ( //start in Docker
-                (System.getenv("TOPIC") != null))
-        {
+                (System.getenv("TOPIC") != null)) {
             topic = System.getenv("TOPIC");
         } else { //start in IDE
             topic = "mc1";
@@ -56,9 +55,8 @@ public class MQTTReceiver implements MqttCallbackExtended{
     }
 
 
-
-    public void receiveData(){
-        try{
+    public void receiveData() {
+        try {
             this.mqttClient.setCallback(this);
             this.mqttClient.connect();
             logger.info("Subscriber connected to MQTT broker");
@@ -66,24 +64,43 @@ public class MQTTReceiver implements MqttCallbackExtended{
             // Subscribe to a topic.
             this.mqttClient.subscribe(topic);
             logger.info("Subscribed to topic <<" + topic + ">>");
-        }
-        catch(MqttException e){
+        } catch (MqttException e) {
             e.printStackTrace();
         }
 
     }
+
     /*
     This method is called when the connection to the server is lost.
      */
     @Override
     public void connectionLost(Throwable throwable) {
-        logger.error("Subscriber lost connection to MQTT broker, trying to reconnect...");
-        try {
-            this.mqttClient.connect();
-        } catch (MqttException e) {
-            e.printStackTrace();
+        logger.error("ManagementCenter lost connection to MQTT broker, trying to reconnect...");
+        while(true) {
+                try {
+                Thread.sleep(5000);
+                if(this.mqttClient.isConnected()){
+                    this.mqttClient.subscribe(topic);
+                }
+                else{
+                    this.mqttClient.connect();
+                    this.mqttClient.subscribe(topic);
+                }
+                break;
+            }
+                catch (MqttException | InterruptedException e) {
+                    logger.error("Reconnect failed");
+                }
+
         }
+
     }
+
+    @Override
+    public void connectComplete(boolean reconnect, String serverURI) {
+
+    }
+
     /*
     This method is called when a message arrives from the server.
     This method is invoked synchronously by the MQTT client.
@@ -104,6 +121,7 @@ public class MQTTReceiver implements MqttCallbackExtended{
         sensorData.add(arrivedSensorDataset);
         cloudConnector.sendSensorData(arrivedSensorDataset);
     }
+
     /*
     Called when delivery for a message has been completed, and all acknowledgments have been received.
     For QoS 0 messages it is called once the message has been handed to the network for delivery.
@@ -113,24 +131,12 @@ public class MQTTReceiver implements MqttCallbackExtended{
     @Override
     public void deliveryComplete(IMqttDeliveryToken MqttDeliveryToken) {
         try {
-            logger.info("Delivery completed: "+ MqttDeliveryToken.getMessage());
+            logger.info("Delivery completed: " + MqttDeliveryToken.getMessage());
         } catch (MqttException e) {
             logger.error("Failed to get delivery token message: " + e.getMessage());
         }
     }
 
-    @Override
-    public void connectComplete(boolean reconnect, String serverURI) {
 
-        try {
-            //Very important to resubcribe to the topic after the connection was (re-)estabslished.
-            //Otherwise you are reconnected but you don't get any message
-            this.mqttClient.subscribe(this.topic);
-        } catch (MqttException e) {
-            e.printStackTrace();
-        }
-
-
-    }
 }
 
