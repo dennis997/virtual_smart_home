@@ -9,7 +9,7 @@ RUN mkdir ./app
 COPY . /app/
 WORKDIR /app
 
-RUN mvn -f ./pom.xml clean package
+RUN mvn -f ./pom.xml package
 
 ###
 ### Run stage

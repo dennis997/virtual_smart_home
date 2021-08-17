@@ -8,7 +8,7 @@ LABEL stage build
 RUN mkdir ./app
 COPY . /app/
 WORKDIR /app
-RUN mvn -f ./pom.xml clean package
+RUN mvn -f ./pom.xml package
 
 ###
 ### Run stage
@@ -19,4 +19,4 @@ LABEL maintainer alexander.scharfenberg@stud.h-da.de
 EXPOSE 5000/udp
 RUN mkdir ./app
 COPY --from=build /app/target/ManagementCenter-1.0-SNAPSHOT.jar /app/
-CMD ["java", "-jar", "/app/ManagementCenter-1.0-SNAPSHOT.jar"]
+CMD ["java", "-Xmx512m", "-jar", "/app/ManagementCenter-1.0-SNAPSHOT.jar"]

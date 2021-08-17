@@ -69,7 +69,7 @@ public class DBConnector {
             return false;
         }
         logger.setLevel(Level.INFO);
-        logger.info("Sensordata from [" + resource.location + "] has been successfully persisted!");
+        logger.info("Sensordata from [" + resource.topic + "] has been successfully persisted!");
         logger.setLevel(Level.WARN);
         return true;
     }

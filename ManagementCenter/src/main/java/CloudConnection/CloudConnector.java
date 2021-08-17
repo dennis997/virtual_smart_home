@@ -61,12 +61,13 @@ public class CloudConnector {
     public void waitForReconnect() throws InterruptedException {
         new Thread(() -> {
             try {
+                logger.info("Reconnecting...");
                 reconnect();
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }).start();
-        logger.info("Reconnecting");
     }
 
     /**
@@ -77,42 +78,42 @@ public class CloudConnector {
     public void reconnect() throws InterruptedException {
         int count = 0;
         int timeout = 5000;
-        while (count < 5) {
+        while (count < 20) {
             try {
                 transport = new TSocket(serverName, thriftServerPort);
                 transport.open();
                 protocol = new TBinaryProtocol(transport);
                 client = new SensorResourceService.Client(protocol);
                 logger.info("RPC Connection re-established!");
-
                 sendRetainedData();
+                logger.info("Retained sensordata was sent out to cloudserver!");
                 break;
             } catch (TTransportException e) {
-                if (count == 0) {
-                    logger.error("Attempt " + count +  " to re-establish RPC Connection failed!");
+                logger.error("Attempt " + count +  " to re-establish RPC Connection failed!");
+                count++;
+                if (count == 20) {
+                    logger.error("Lost connection to RPC-Endpoint!");
                 }
-                count--;
             }
             Thread.sleep(timeout);
         }
-        logger.error("Lost connection to RPC-Endpoint!");
     }
 
     /**
      * Sends out retained sensordata and prints out informational message from which mc and location it comes.
      */
-    public void sendRetainedData() {
+    public void sendRetainedData() throws TTransportException, InterruptedException {
         try {
             for (SensorResource res : queuedData) {
                 client.persistSensorData(res);
                 transport.flush();
             }
             queuedData.stream().forEach(res ->
-                    logger.info(res.topic + "is now transmitting sensordata from the " + res.location +" again"));
+                    logger.info(res.topic + " is now transmitting sensordata from [" + res.topic + "] " + res.location +" again"));
             queuedData.clear();
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Failed to sent out retained sensordata!");
         }
     }
 
@@ -123,11 +124,13 @@ public class CloudConnector {
      */
     public Boolean retransmit(SensorResource sensorResource) {
         boolean persisted = false;
+        logger.info("Retransmission of sensordata from [" + sensorResource.topic + "] " +sensorResource.location + " in progress...");
         try {
             persisted = client.persistSensorData(sensorResource);
             transport.flush();
             return persisted;
         } catch (TException e) {
+            logger.error("Retransmission of sensordata from [" + sensorResource.topic + "] " +sensorResource.location + " failed!");
             return persisted;
         }
     }
@@ -151,7 +154,7 @@ public class CloudConnector {
             if (check) {
                 logger.info("RPC transmitted successfully!");
             } else {
-                check = retransmit(sensorResource);
+                retransmit(sensorResource);
             }
             transport.flush();
         }

@@ -97,6 +97,7 @@ public class SmartHomeSensor {
     public int getRandomNumber(int min, int max) {
         return (int) ((Math.random() * (max - min)) + min);
     }
+
     /**
      * Generate six pseudo-random sensor values to be send out
      * @return byte[] to be send out via UDP-socket
@@ -123,12 +124,10 @@ public class SmartHomeSensor {
     public void sendData() throws InterruptedException {
         if (mqtt == 1) {
             while(true) {
-                // TODO: JUST FOR TESTING! DELETE AFTERWARDS!!!
                 byte[] sensorData = generateSensorData();
                 MqttMessage mqttMessage = new MqttMessage(sensorData);
-                // TODO: QoS should be 1 or 2 in P5!
-                mqttMessage.setQos(0); // Quality of Service: we don`t care that we lose Packages, just like UDP.
-                mqttMessage.setRetained(true); // This flag indicates to the broker that it should retain this message until consumed by a subscriber.
+                mqttMessage.setQos(0);
+                mqttMessage.setRetained(true);
                 try {
                     publisher.publish(topic, mqttMessage); // Publishing the message with the corresponding topic
                 }
