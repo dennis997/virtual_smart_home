@@ -244,8 +244,6 @@ services:
         image: "cloudserverimage:latest"
         restart: always
         container_name: "cloudserver1"
-        logging:
-            driver: none
         build:
             context: ./CloudServer
             dockerfile: Dockerfile
@@ -262,8 +260,6 @@ services:
         image: "cloudserverimage:latest"
         restart: always
         container_name: "cloudserver2"
-        logging:
-            driver: none
         build:
             context: ./CloudServer
             dockerfile: Dockerfile
@@ -280,8 +276,6 @@ services:
         image: "cloudserverimage:latest"
         restart: always
         container_name: "cloudserver3"
-        logging:
-            driver: none
         build:
             context: ./CloudServer
             dockerfile: Dockerfile
@@ -296,8 +290,6 @@ services:
     #---------DB_Cluster_Setup----------#
     clustersetup:
         image: mongo:3.6-jessie
-        logging:
-            driver: none
         links:
             - mongo:mongo
             - mongo2:mongo2
